@@ -1,0 +1,13 @@
+all records have an _id (it's obviusly). I wont write it.
+
+var store = {
+	name: str,
+	password: str
+}
+
+var user = {
+	storeId: id,
+	name: str,
+	password: str,
+	accountId: id
+}
