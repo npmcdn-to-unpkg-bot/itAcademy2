@@ -44,7 +44,7 @@ var transaction = {
   _id: string,
   accountFrom: number,
   accountTo: number,
-  ammount: number
+  amount: number
 };
 
 var order = {
