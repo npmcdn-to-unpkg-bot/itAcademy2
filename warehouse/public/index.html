@@ -1,0 +1,34 @@
+<!DOCTYPE>
+<html ng-app='app'>
+	<head>
+		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js'></script>
+		<script src='controllers/mainController.js'></script>
+		
+		<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+		<title>Test</title>
+	</head>
+	<body>
+		<div class="container" ng-controller='mainController'>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Account</th>
+						<th>Amount</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr >
+						<td><input class='form-control' ng-model='account.name'></td>
+						<td><input class='form-control' ng-model='account.amount'></td>
+						<td><button class='btn btn-primary' ng-click='addAccount()'>Add new account</button></td>
+					</tr>
+					<tr ng-repeat='account in accountList'>
+						<td>{{account.name}}</td>
+						<td>{{account.amount}}</td>
+						<td><button class='btn btn-danger' ng-click='removeAccount(account._id)'>Remove</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
