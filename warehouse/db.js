@@ -9,10 +9,20 @@ function Warehouse(name) {
 };
 var warehouse = new Warehouse('superCompany');
 
-db.warehouse.insert(warehouse, function (err, saved) {
-    if (err || !saved) console.log("company not saved");
-    else console.log("company saved");
-});
+
+module.exports.fillDb = function () {
+    db.warehouses.insert(warehouse, function (err, saved) {
+        if (err || !saved) console.log("company not saved");
+        else console.log("company saved");
+    });  
+}
+
+
+
+
+
+
+
 
 /*
 var schemaWarehouse = new mongoose.Schema({
