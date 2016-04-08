@@ -1,0 +1,29 @@
+<!DOCTYPE>
+<html ng-app='app'>
+	<head>
+		<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+		<title>Test</title>
+	</head>
+	<body>
+		<div class="container" ng-controller='mainController'>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Account</th>
+						<th>Amount</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat='account in accountList'>
+						<td>{{account.name}}</td>
+						<td>{{account.amount}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js'></script>
+		<script src='controllers/mainController.js'></script>
+	</body>
+</html>
