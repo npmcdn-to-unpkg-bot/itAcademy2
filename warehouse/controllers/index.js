@@ -84,7 +84,18 @@ module.exports.set = function (app) {
         });
 
     });
-    app.post('/addWarehouse', function (req, res) {
+
+    app.get('/warehouse', function (req, res) {
+        db.warehouses.find({}, function (err, data) {
+            if (err)
+                return res.send({
+                    error: 'Error while making response'
+                });
+            return res.send(data);
+        });
+
+    });
+    app.post('/warehouse', function (req, res) {
         var warehouse = {
             nameWarehouse: req.body.name,
             date: Date.now(),
@@ -97,5 +108,14 @@ module.exports.set = function (app) {
             else console.log("warehouse saved");
         });
     });
+    app.delete('/warehouse/:id', function (req, res) {
+        var filter = {_id: mongojs.ObjectId(req.params.id)}
+        db.warehouses.remove(filter, function(err){
+            if (err)
+                return res.send({error: 'Error while deleting a record'});
+            return res.sendStatus(200);
+        });
 
+
+    });
 }

@@ -12,20 +12,20 @@
 			<table class="table">
 				<thead>
 					<tr>
+						<th>Warehouses</th>
 						<th>Account</th>
-						<th>Amount</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr >
-						<td><input class='form-control' ng-model='account.name'></td>
-						<td><input class='form-control' ng-model='account.amount'></td>
+						<td><input class='form-control' ng-model='warehouses.nameWarehouse'></td>
+						<td><input class='form-control' ng-model='warehouses.warehouseAccount'></td>
 						<td><button class='btn btn-primary' ng-click='addAccount()'>Add new account</button></td>
 					</tr>
-					<tr ng-repeat='account in accountList'>
-						<td>{{account.name}}</td>
-						<td>{{account.amount}}</td>
-						<td><button class='btn btn-danger' ng-click='removeAccount(account._id)'>Remove</button></td>
+					<tr ng-repeat='warehouse in warehouseList'>
+						<td>{{warehouses.nameWarehouse}}</td>
+						<td>{{warehouses.warehouseAccount}}</td>
+						<td><button class='btn btn-danger' ng-click='removeAccount(warehouse._id)'>Remove</button></td>
 					</tr>
 				</tbody>
 			</table>

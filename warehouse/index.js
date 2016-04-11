@@ -15,4 +15,4 @@ module.exports.start = function(){
 	app.listen(config.port, function () {
 		console.log('Warehouse app listening on port '+ config.port);
 	});
-}
+}()

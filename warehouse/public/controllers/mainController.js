@@ -1,13 +1,13 @@
 var mainController = ['$scope', '$http', function($scope, $http){
 
 	var getList = function(){
-		$http.get('/accounts')
+		$http.get('/admGetWarehouses')
 		.then(function(res){
 			if (res.data.error)
 				return console.log(res.data.error);
 
-			$scope.accountList = res.data;
-			$scope.account = {};
+			$scope.warehouseList = res.data;
+			$scope.warehouse = {};
 		}, function(err){
 			console.log(err);
 		});
@@ -25,8 +25,8 @@ var mainController = ['$scope', '$http', function($scope, $http){
 		});
 	}
 
-	$scope.removeAccount = function(id){
-		$http.delete('/accounts/' + id)
+	$scope.removeWarehouse = function(id){
+		$http.delete('/warehouse/' + id)
 		.then(function(res){
 			getList();
 		}, function(err){
