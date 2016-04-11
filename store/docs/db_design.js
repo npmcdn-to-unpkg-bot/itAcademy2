@@ -1,19 +1,16 @@
 var store = {
-  _id: string,
   name: string,
   password: string,
   account: number
 };
 
 var warehouse = {
-  _id: objectId,
   name: string,
   account: number,
   storeId: id
 };
 
 var user = {
-  _id: objectId,
   storeId: id,
   name: string,
   surname:  string,
@@ -32,7 +29,6 @@ var itemSet = {
 };
 
 var item {
-  _id: objectId,
   title: string,
   description: string,
   image: string,
@@ -41,14 +37,12 @@ var item {
 };
 
 var transaction = {
-  _id: string,
   accountFrom: number,
   accountTo: number,
   amount: number
 };
 
 var order = {
-  _id: objectId,
   date: date,
   itemSet: [itemObject1, itemObject2, ... ],
   transactionId: id

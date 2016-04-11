@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var config = require('./config');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
@@ -8,15 +9,18 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+app.use(express.static(__dirname + '/public'));
 
 /////////
 require('./controllers').set(app);
 
 var start = function(){
-	app.listen(3001, function () {
-	  console.log('Store app listening on port 3001');
+	app.listen(config.port, function () {
+	  console.log('Store app listening on port ' + config.port);
 	});
 }
+
+start();
 
 module.exports = {
 	start: start
