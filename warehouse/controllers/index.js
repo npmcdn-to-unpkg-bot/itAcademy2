@@ -97,7 +97,7 @@ module.exports.set = function (app) {
     });
     app.post('/warehouse', function (req, res) {
         var warehouse = {
-            nameWarehouse: req.body.name,
+            nameWarehouse: req.body.nameWarehouse,
             date: Date.now(),
             available: true,
             warehouseAccount: req.body.warehouseAccount,
@@ -105,14 +105,23 @@ module.exports.set = function (app) {
         };
         db.warehouses.insert(warehouse, function (err, saved) {
             if (err || !saved) console.log("warehouse not saved");
-            else console.log("warehouse saved");
+            return res.sendStatus(200);
         });
     });
     app.delete('/warehouse/:id', function (req, res) {
-        var filter = {_id: mongojs.ObjectId(req.params.id)}
+        var filter = {_id: mongojs.ObjectId(req.params.id)};
         db.warehouses.remove(filter, function(err){
             if (err)
                 return res.send({error: 'Error while deleting a record'});
+            return res.sendStatus(200);
+        });
+
+
+    });
+    app.delete('/warehouse', function (req, res) {
+        db.warehouses.remove({}, function(err){
+            if (err)
+                return res.send({error: 'Error while deleting a records'});
             return res.sendStatus(200);
         });
 

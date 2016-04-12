@@ -5,7 +5,7 @@
 		<script src='controllers/mainController.js'></script>
 		
 		<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
-		<title>Test</title>
+		<title>Admin panel for warehouses</title>
 	</head>
 	<body>
 		<div class="container" ng-controller='mainController'>
@@ -18,14 +18,16 @@
 				</thead>
 				<tbody>
 					<tr >
-						<td><input class='form-control' ng-model='warehouses.nameWarehouse'></td>
-						<td><input class='form-control' ng-model='warehouses.warehouseAccount'></td>
-						<td><button class='btn btn-primary' ng-click='addAccount()'>Add new account</button></td>
+						<td><input class='form-control input-sm' ng-model='warehouse.nameWarehouse'></td>
+						<td><input class='form-control input-sm' ng-model='warehouse.warehouseAccount'></td>
+						<td><button class='btn btn-primary btn-sm' ng-click='addWarehouse()'><span class="glyphicon glyphicon-plus"></span>Add warehouse</button></td>
+						<td><button class='btn btn-danger btn-sm' ng-click='removeWarehouses()'><span class="glyphicon glyphicon-remove"></span>RemoveAll</button></td>
 					</tr>
 					<tr ng-repeat='warehouse in warehouseList'>
-						<td>{{warehouses.nameWarehouse}}</td>
-						<td>{{warehouses.warehouseAccount}}</td>
-						<td><button class='btn btn-danger' ng-click='removeAccount(warehouse._id)'>Remove</button></td>
+						<td>{{warehouse.nameWarehouse}}</td>
+						<td>{{warehouse.warehouseAccount}}</td>
+						<td><button class='btn btn-sm btn-danger' ng-click='removeWarehouse(warehouse._id)'><span class="glyphicon glyphicon-remove"></span>Remove</button></td>
+						<td><button class='btn btn-primary btn-sm' ng-click='editWarehouse()'><span class="glyphicon glyphicon-pencil"></span>Edit</button></td>
 					</tr>
 				</tbody>
 			</table>
