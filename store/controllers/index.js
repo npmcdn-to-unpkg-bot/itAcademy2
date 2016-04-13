@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 
 var Store = require('../models').Store;
-
+var ItemSet = require('../models').ItemSet;
 var Item = require('../models').Item;
 
 module.exports.set = function(app) {

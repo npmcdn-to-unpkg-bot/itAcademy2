@@ -7,6 +7,7 @@ var itemSchema = new Schema;
 itemSchema.add({
   title: {
     type: String,
+    unique: true,
     required: true
   },
   description: {
