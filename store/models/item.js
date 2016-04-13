@@ -16,23 +16,8 @@ itemSchema.add({
   image: {
     type: String
   },
-  price: {
-    type: Number
-  },
   category: {
     type: String,
-    required: true
-  },
-  storeId: {
-    type: Schema.Types.ObjectId,
-    required: true
-  },
-  originalPrice: {
-    type: Number,
-    required: true
-  },
-  count: {
-    type: Number,
     required: true
   }
 });

@@ -1,10 +1,12 @@
 var storeController = ['$scope', '$http', function($scope, $http){
+  $scope.products = [];
 
 	var getProducts = function(){
 		$http.get('/products')
 		.then(function(res){
 			if (res.data.error)
 				return console.log(res.data.error);
+
 
 			$scope.products = res.data;
 		}, function(err){

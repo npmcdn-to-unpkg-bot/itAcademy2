@@ -17,6 +17,9 @@ itemSetSchema.add({
     type: Number,
     required: true
   },
+  price: {
+    type: Number
+  },
   count: {
     type: Number,
     required: true

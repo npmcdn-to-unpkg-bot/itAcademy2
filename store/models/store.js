@@ -7,10 +7,12 @@ var storeSchema = new Schema;
 storeSchema.add({
   email: {
     type: String,
+    unique: true,
     required: true
   },
   name: {
     type: String,
+    unique: true,
     required: true
   },
   password: {
@@ -19,6 +21,7 @@ storeSchema.add({
   },
   account: {
     type: Number,
+    unique: true,
     required: true
   }
 });
