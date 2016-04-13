@@ -1,0 +1,11 @@
+import mongoose from 'mongoose';
+
+const Schema = mongoose.Schema;
+
+const AccountSchema = new Schema({
+    login: {type: String},
+    password: {type: String},
+    amount: {type: Number}
+});
+
+const Account = mongoose.model('Account', AccountSchema);

@@ -6,19 +6,19 @@ app.use(cookieParser());
 var bodyParser = require('body-parser')
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-})); 
+    extended: true
+}));
 
 /////////
 require('./controllers').set(app);
 
 var start = function(){
-	app.listen(3000, function () {
-	  console.log('Bank app listening on port 3000');
-	});
+    app.listen(3000, function () {
+        console.log('Bank app listening on port 3000');
+    });
 }
 
 
 module.exports = {
-	start: start
+    start: start
 }

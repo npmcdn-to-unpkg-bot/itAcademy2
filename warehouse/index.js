@@ -10,13 +10,9 @@ app.use(express.static(__dirname + '/public'));
 
 require('./controllers').set(app);
 
-var dbModule = require('./db');
-dbModule.fillDb();
-
-
 
 module.exports.start = function(){
 	app.listen(config.port, function () {
 		console.log('Warehouse app listening on port '+ config.port);
 	});
-}
+}()

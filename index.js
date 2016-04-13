@@ -4,6 +4,6 @@ var warehouse = require('./warehouse');
 var test = require('./test');
 
 warehouse.start();
-// store.start();
+store.start();
 // bank.start();
 //test.start();

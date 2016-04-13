@@ -16,6 +16,6 @@
     "express": "^4.13.4",
     "mongojs": "^2.3.0",
     "underscore": "^1.8.3",
-    "mongodb": "1.4.9"
+    "mongodb":"^2.1.16"
   }
 }
