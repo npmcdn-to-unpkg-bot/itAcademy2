@@ -1,24 +1,21 @@
-var mongoose = require('mongose');
+// store model
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var passportLocalMongoose = require('passport-local-mongoose');
 
+
 var Store = new Schema({
-    name: {
-        type: String,
-        required: true
-     },
-     password: {
-         type: String,
-         required: true
-     },
-     email: {
-         type: String,
-         required: true
-     },
-     account: {
-         type: Number,
-         required: true
-    }
+  storename: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  }
 });
 
-module.export = mongoose.model('stores', Store);
+Store.plugin(passportLocalMongoose);
+
+
+module.exports = mongoose.model('stores', Store);

@@ -29,7 +29,7 @@ angular.module('myApp').factory('AuthService',
         if(data.status){
           store = true;
         } else {
-          store = false;
+         store = false;
         }
       })
       // handle error
@@ -38,14 +38,14 @@ angular.module('myApp').factory('AuthService',
       });
     }
 
-    function login(name, password) {
+    function login(storename, password) {
 
       // create a new instance of deferred
       var deferred = $q.defer();
 
       // send a post request to the server
       $http.post('/store/login',
-        {name: name, password: password})
+        {storename: storename, password: password})
         // handle success
         .success(function (data, status) {
           if(status === 200 && data.status){
@@ -90,14 +90,14 @@ angular.module('myApp').factory('AuthService',
 
     }
 
-    function register(name, password) {
+    function register(storename, password) {
 
       // create a new instance of deferred
       var deferred = $q.defer();
 
       // send a post request to the server
       $http.post('/store/register',
-        {name: name, password: password})
+        {storename: storename, password: password})
         // handle success
         .success(function (data, status) {
           if(status === 200 && data.status){
