@@ -4,18 +4,16 @@
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
-var morgan = require('morgan');
 var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
+
 
 mongoose.connect('mongodb://elifuser:qwerty12@ds015710.mlab.com:15710/elifbankdb');
 
-app.use(express.static(__dirname + '/public'));
-app.use(morgan('dev'));
+app.use(express.static(__dirname + '/bank/public'));
 app.use(bodyParser.urlencoded({'extended':'true'}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
-app.use(methodOverride());
+
 
 var Account = mongoose.model('Account', {
     login : String,
@@ -72,9 +70,5 @@ app.delete('/api/accounts/:account_id', function(req, res) {
     });
 });
 
-app.get('*', function(req, res) {
-    res.sendfile('./public/index.html');
-});
-
-app.listen(8080);
-console.log("App listening on port 8080");
+app.listen(3001);
+console.log("App listening on port 3001");
