@@ -1,7 +1,7 @@
 <div class="container">
   <h1>Stores list</h1>
   <ul>
-    <li ng-repeat="store in stores"><a href ng-click="storeCtrl.visitStore(store._id)">{{store.name}}</a></li>
+    <li ng-repeat="store in stores"><a href="#/store/{{store._id}}">{{store.name}}</a></li>
   </ul>
 
 </div>

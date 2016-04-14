@@ -1,20 +1,6 @@
-var storeController = ['$scope', '$http', function($scope, $http){
-  $scope.products = [];
+var storeAppControllers = angular.module('storeAppControllers', [])
 
-	this.visitStore = function(storeId){
-    console.log(storeId);
-
-    $http.get('/store/' + storeId)
-		.then(function(res){
-			if (res.data.error)
-				return console.log(res.data.error);
-
-      console.log(res.data);
-			$scope.products = res.data;
-		}, function(err){
-			console.log(err);
-		});
-	}
+storeAppControllers.controller('StoreCtrl', ['$scope', '$http', function($scope, $http){
 
   var getStores = function() {
     $http.get('/stores')
@@ -30,12 +16,31 @@ var storeController = ['$scope', '$http', function($scope, $http){
 
   getStores();
 
+}]);
 
-}];
+storeAppControllers.controller('StoreFrontCtrl', ['$scope', '$http','$routeParams', function($scope, $http, $routeParams){
+  $scope.products = [];
+
+	var visitStore = function(){
+
+    $http.get('/store/' + $routeParams.id)
+		.then(function(res){
+			if (res.data.error)
+				return console.log(res.data.error);
+
+			$scope.products = res.data;
+		}, function(err){
+			console.log(err);
+		});
+	}
+
+  visitStore();
+
+}]);
 
 (function() {
     angular
-        .module('storeApp', ['ngRoute'])
+        .module('storeApp', ['ngRoute', 'storeAppControllers'])
         .filter('unique', function() {
           return function(collection, keyname) {
             var output = [],
@@ -51,19 +56,16 @@ var storeController = ['$scope', '$http', function($scope, $http){
             return output;
           };
         })
-        .controller("storeController", storeController)
         .config(['$routeProvider',
         function($routeProvider) {
           $routeProvider.
           when('/', {
             templateUrl: 'partials/storesList.html',
-            controller: 'storeController',
-            controllerAs: 'storeCtrl'
+            controller: 'StoreCtrl'
           }).
           when('/store/:id', {
-            templateUrl: 'partials/storesFront.html',
-            controller: 'storeController',
-            controllerAs: 'storeCtrl'
+            templateUrl: 'partials/storeFront.html',
+            controller: 'StoreFrontCtrl'
           }).
           otherwise({
             redirectTo: '/'

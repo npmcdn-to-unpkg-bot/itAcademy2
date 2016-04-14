@@ -48,7 +48,6 @@ module.exports.set = function(app) {
 					});
 			})
 			.then(function() {
-				console.log(storeItems);
 				return res.json(storeItems);
 			})
 			.catch(function(err){
