@@ -65,7 +65,7 @@ app.delete('/api/accounts/:account_id', function(req, res) {
             {
                 res.send(err);
             }
-            res.json(todos);
+            res.json(accounts);
         });
     });
 });
