@@ -3,7 +3,7 @@ var warehouse = {
     nameWarehouse: String,
     date: Date,
     available: Boolean,
-    warehouseAccount: Number,
+    warehouseAccount: String,
     itemSet: [{
         id: id, //id in item so here id, not _id
         amount: Number,
