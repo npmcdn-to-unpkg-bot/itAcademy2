@@ -1,8 +1,8 @@
 var Store = require('./store');
 var Warehouse = require('./warehouse');
 var User = require('./user');
-var ItemSet = require('./itemSet');
 var Item = require('./item');
+var ItemSet = require('./itemSet');
 var Order = require('./order');
 var Transaction = require('./transaction');
 

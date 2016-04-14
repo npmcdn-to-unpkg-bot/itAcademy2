@@ -25,6 +25,7 @@ var itemSet = {
   storeId: id,
   itemId: id,
   originalPrice: number,
+  price: number,
   count: number
 };
 
@@ -32,7 +33,6 @@ var item {
   title: string,
   description: string,
   image: string,
-  price: number,
   category: string
 };
 
