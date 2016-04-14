@@ -5,6 +5,9 @@ var Store = require('../models').Store;
 var ItemSet = require('../models').ItemSet;
 var Item = require('../models').Item;
 
+var _ = require('underscore');
+var Promise = require('bluebird');
+
 module.exports.set = function(app) {
 
 	app.get('/stores', function (req, res) {
@@ -17,14 +20,40 @@ module.exports.set = function(app) {
 
 	});
 
-	app.get('/products', function (req, res) {
+	app.get('/store/:id', function (req, res) {
+		var storeId = req.params.id;
 
-		Item.find({storeId: storeId}, function(err, docs) {
-			if (err) console.log(err);
+		ItemSet.find({storeId: storeId})
+		.then(function(docs) {
+			var storeItems = [];
 
-			return res.json(docs);
-		})
+			Promise.map(docs, function(doc) {
+				var itemDoc = {};
 
+				itemDoc.price = doc.price;
+				itemDoc.count = doc.count;
+
+				return Item.findOne({'_id': doc.itemId})
+					.then(function(doc){
+
+						itemDoc.title = doc.title;
+						itemDoc.description = doc.description;
+						itemDoc.image = doc.image;
+						itemDoc.category = doc.category;
+
+						storeItems.push(itemDoc);
+					})
+					.catch(function(err){
+						return console.log(err);
+					});
+			})
+			.then(function() {
+				console.log(storeItems);
+				return res.json(storeItems);
+			})
+			.catch(function(err){
+				return console.log(err);
+			})
+		});
 	});
-
-}
+};
