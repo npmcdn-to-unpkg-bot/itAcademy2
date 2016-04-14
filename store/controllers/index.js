@@ -20,75 +20,48 @@ module.exports.set = function(app) {
 
 	});
 
+	// created itemsToSend in order to form and populate array of products for the store
 	app.get('/store/:id', function (req, res) {
 		var storeId = req.params.id;
 		var storeItems = [];
-		var storeItemsIds = [];
+		var storeItems1 = [];
 
-		ItemSet.find({storeId: storeId}).exec()
-		.then(function(docs) {
-			storeItems = docs;
-
-			return storeItems;
-		})
-		.then(function(storeItems) {
-			_.each(storeItems, function(storeItem) {
-				storeItemsIds.push(storeItem.itemId);
+		ItemSet.find({storeId: storeId})
+		.then(function(data) {
+			storeItems = data;
+			var storeItemsIds = _.map(storeItems, function(storeItem) {
+				return storeItem.itemId
 			})
-			return storeItemsIds;
-		})
-		.then(function(storeItemsIds) {
-			return Item.find({'_id': {$in: storeItemsIds}}).exec()
+			return Item.find({'_id': {$in: storeItemsIds}})
 		})
 		.then(function(items) {
-			console.log(items);
-			console.log(storeItems);
+			var itemsToSend = []
 
 			_.each(storeItems, function(storeItem) {
+				storeItem = JSON.parse(JSON.stringify(storeItem));
 				_.each(items, function(item) {
+					item = JSON.parse(JSON.stringify(item));
 					console.log(storeItem.itemId == item._id);
+					if (storeItem.itemId == item._id) {
+						var itemToSend = {
+							title: item.title,
+							description: item.description,
+							image: item.image,
+							category: item.category,
+							price: storeItem.price,
+							count: storeItem.count
+						};
+
+						itemsToSend.push(itemToSend);
+					};
 				});
 			});
 
-			return res.json(storeItems);
+			return res.json(itemsToSend);
 		})
 		.catch(function(err){
 			return console.log(err);
 		});
 
-	});
+});
 };
-
-/*		ItemSet.find({storeId: storeId})
-		.then(function(docs) {
-			var storeItems = [];
-
-				Promise.map(docs, function(doc) {
-				var itemDoc = {};
-
-				itemDoc.price = doc.price;
-				itemDoc.count = doc.count;
-			}
-				return Item.findOne({'_id': doc.itemId})
-					.then(function(doc){
-
-						itemDoc.title = doc.title;
-						itemDoc.description = doc.description;
-						itemDoc.image = doc.image;
-						itemDoc.category = doc.category;
-
-						storeItems.push(itemDoc);
-					})
-					.catch(function(err){
-						return console.log(err);
-					});
-			})
-			.then(function() {
-				return res.json(storeItems);
-			})
-			.catch(function(err){
-				return console.log(err);
-			})
-		});
-	});
-*/
