@@ -20,8 +20,6 @@ var start = function(){
 	});
 }
 
-start();
-
 module.exports = {
 	start: start
 }

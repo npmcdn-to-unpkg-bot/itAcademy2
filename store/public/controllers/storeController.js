@@ -1,13 +1,15 @@
 var storeController = ['$scope', '$http', function($scope, $http){
   $scope.products = [];
 
-	var getProducts = function(){
-		$http.get('/products')
+	this.visitStore = function(storeId){
+    console.log(storeId);
+
+    $http.get('/store/' + storeId)
 		.then(function(res){
 			if (res.data.error)
 				return console.log(res.data.error);
 
-
+      console.log(res.data);
 			$scope.products = res.data;
 		}, function(err){
 			console.log(err);
@@ -28,9 +30,6 @@ var storeController = ['$scope', '$http', function($scope, $http){
 
   getStores();
 
-  this.visitStore = function(storeId) {
-    console.log(storeId);
-  }
 
 }];
 
@@ -58,6 +57,11 @@ var storeController = ['$scope', '$http', function($scope, $http){
           $routeProvider.
           when('/', {
             templateUrl: 'partials/storesList.html',
+            controller: 'storeController',
+            controllerAs: 'storeCtrl'
+          }).
+          when('/store/:id', {
+            templateUrl: 'partials/storesFront.html',
             controller: 'storeController',
             controllerAs: 'storeCtrl'
           }).
