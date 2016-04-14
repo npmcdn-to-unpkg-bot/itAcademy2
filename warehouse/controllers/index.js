@@ -1,8 +1,6 @@
 var express = require('express');
 var app = express();
 var config = require('../config');
-//var mongojs = require('mongojs');//del
-//var db = mongojs(config.dbConnection, config.collections);//del
 //db
 var mongoose = require('mongoose');
 mongoose.connect(config.dbConnection);
@@ -25,7 +23,7 @@ module.exports.set = function (app) {
         });
 
     });
-    app.post('/buyItems/:id', function (req, res) {//TODO
+    app.post('/buyItems/:id', function (req, res) {//TODO check if items is available then -,
         //:id ==warehouse account
         var prom = new Promise(function (resolve, reject) {
             var data = {
@@ -53,15 +51,28 @@ module.exports.set = function (app) {
             req.write(data);
             req.end();
         });
-        prom.then(function () {//onFulfilled
-            res.send({
-                success: true,
-                message: "The transaction was successful"
-            })
+        prom.then(function () {//onFulfilled check if enough items in warehouse
+            if (!req.body.items.every(isEnoughItems))throw new Error();
+            function isEnoughItems(item) {
+                Warehouse.findById(req.params.id, function (err, data) {
+                    if (err)throw new Error();
+//TODO we have [{id:4,amount:1},{id:5,amount:2}] and check item.amount-data.itemSet[0-n].amount>0?
+                })
+            }
         }, function () {//onRejected
             res.send({
                 success: false,
                 message: "Bank has not confirmed your payment"
+            })
+        }).then(function () {
+            res.send({
+                success: true,
+                message: "The transaction was successful"
+            })
+        }, function () {
+            res.send({
+                success: false,
+                message: "There is no enough items for your query"
             })
         });
     })
