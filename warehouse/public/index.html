@@ -7,29 +7,31 @@
     <link href="main.css" rel="stylesheet">
     <title>Admin panel for warehouses</title>
 </head>
-<body>
+<body ng-app="ngRoute">
 <div class="container" ng-controller='mainController'>
-    <ul class="nav nav-tabs">
-        <li role="presentation" class="active"><a href="#">Main</a></li>
-        <li role="presentation"><a href="#">Warehouses</a></li>
-        <li role="presentation"><a href="#">Items</a></li>
-    </ul>
-
-
+    <div ng-controller="ControllerRoute">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="Main">Main</a></li>
+            <li role="presentation"><a href="Warehouses">Warehouses</a></li>
+            <li role="presentation"><a href="Items">Items</a></li>
+        </ul>
+    </div>
 
     <div class="col-sm-5 top-buffer">
         <div class="control-group">
             <div class="input-group">
                 <span class="input-group-addon">Name</span>
-                <input type="text" class="form-control input-sm" placeholder="of warehouse" ng-model='warehouse.nameWarehouse'
-                       >
+                <input type="text" class="form-control input-sm" placeholder="of warehouse"
+                       ng-model='warehouse.nameWarehouse'
+                >
             </div>
         </div>
         <div class="control-group">
 
             <div class="input-group">
                 <span class="input-group-addon">Password</span>
-                <input type="password" class="form-control input-sm" placeholder="type your password for account in bank"
+                <input type="password" class="form-control input-sm"
+                       placeholder="type your password for account in bank"
                        ng-model='warehouse.warehousePassword'>
             </div>
             <button class='btn btn-primary btn-sm top-buffer' ng-click='addWarehouse()'><span
