@@ -6,20 +6,21 @@
 
     <title>Bank</title>
 
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <style>
         html                    { overflow-y:scroll; }
         body                    { padding-top:50px; }
         #account-list              { margin-bottom:30px; }
     </style>
 
-    <script src="ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
-    <script src="ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
-    <script src="core.js"></script>
 
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <script type="text/javascript" src="../public/core.js"></script>
 </head>
 
 <body ng-controller="mainController">
+
     <div class="container">
         <div class="jumbotron text-center">
             <h1>Welcome to bank <span class="label label-info">{{accounts.length}}</span></h1>
