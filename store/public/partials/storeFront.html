@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-    
+
     <nav>
       <div class="nav-wrapper">
         <a href="#!" class="brand-logo">Logo</a>
@@ -15,6 +15,18 @@
         </ul>
       </div>
     </nav>
+
+    <div class="col s12">
+      <ul ng-repeat="product in products">
+        <li><h4>{{product.title}}</h3></li>
+        <li>{{product.price | currency}}</li>
+        <li>{{product.category}}</li>
+        <li>{{product.image}}</li>
+        <li>{{product.description}}</li>
+        <li>{{product.count}}</li>
+      </ul>
+
+    </div>
   </div>
 
 
