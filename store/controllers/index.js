@@ -30,20 +30,6 @@ module.exports.set = function(app) {
 			storeItems = data;
 			var storeItemsIds = _.map(storeItems, function(storeItem) {
 				return storeItem.itemId
-<<<<<<< HEAD
-			})
-			return Item.find({'_id': {$in: storeItemsIds}}).lean()
-		})
-		.then(function(items) {
-			var result = _.map(storeItems, function(storeItem) {
-				var item =  _.find(items, function(item) {
-					return storeItem.itemId.toString() === item._id.toString()
-				});
-				return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'category', 'image'));
-			});
-
-			return res.json(result);
-=======
 			});
 			return Item.find({'_id': {$in: storeItemsIds}}).lean();
 		})
@@ -54,9 +40,8 @@ module.exports.set = function(app) {
 			   	});
 			  	return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
 			});
-			
+
 			return res.send(result);
->>>>>>> 42e06c3d3be372131cb47d5f35e580c2bb2dcf28
 		})
 		.catch(function(err){
 			return console.log(err);
