@@ -25,37 +25,23 @@ module.exports.set = function(app) {
 		var storeId = req.params.id;
 		var storeItems = [];
 
-		ItemSet.find({storeId: storeId})
+		ItemSet.find({storeId: storeId}).lean()
 		.then(function(data) {
 			storeItems = data;
 			var storeItemsIds = _.map(storeItems, function(storeItem) {
 				return storeItem.itemId
 			})
-			return Item.find({'_id': {$in: storeItemsIds}})
+			return Item.find({'_id': {$in: storeItemsIds}}).lean()
 		})
 		.then(function(items) {
-			var itemsToSend = []
-
-			_.each(storeItems, function(storeItem) {
-				storeItem = JSON.parse(JSON.stringify(storeItem));
-				_.each(items, function(item) {
-					item = JSON.parse(JSON.stringify(item));
-					if (storeItem.itemId == item._id) {
-						var itemToSend = {
-							title: item.title,
-							description: item.description,
-							image: item.image,
-							category: item.category,
-							price: storeItem.price,
-							count: storeItem.count
-						};
-
-						itemsToSend.push(itemToSend);
-					};
+			var result = _.map(storeItems, function(storeItem) {
+				var item =  _.find(items, function(item) {
+					return storeItem.itemId.toString() === item._id.toString()
 				});
+				return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'category', 'image'));
 			});
 
-			return res.json(itemsToSend);
+			return res.json(result);
 		})
 		.catch(function(err){
 			return console.log(err);
