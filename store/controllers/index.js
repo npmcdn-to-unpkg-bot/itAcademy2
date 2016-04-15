@@ -24,7 +24,6 @@ module.exports.set = function(app) {
 	app.get('/store/:id', function (req, res) {
 		var storeId = req.params.id;
 		var storeItems = [];
-		var storeItems1 = [];
 
 		ItemSet.find({storeId: storeId})
 		.then(function(data) {
@@ -41,7 +40,6 @@ module.exports.set = function(app) {
 				storeItem = JSON.parse(JSON.stringify(storeItem));
 				_.each(items, function(item) {
 					item = JSON.parse(JSON.stringify(item));
-					console.log(storeItem.itemId == item._id);
 					if (storeItem.itemId == item._id) {
 						var itemToSend = {
 							title: item.title,
@@ -63,5 +61,6 @@ module.exports.set = function(app) {
 			return console.log(err);
 		});
 
-});
+	});
+
 };

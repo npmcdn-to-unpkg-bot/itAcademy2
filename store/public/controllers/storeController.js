@@ -1,6 +1,22 @@
-var storeAppControllers = angular.module('storeAppControllers', [])
+var storeAppControllers = angular.module('storeAppControllers', ['underscore'])
 
-storeAppControllers.controller('StoreCtrl', ['$scope', '$http', function($scope, $http){
+storeAppControllers.factory('storeInfo', [function() {
+  var storeData = {};
+
+  function set(data) {
+    storeData = data;
+  }
+  function get() {
+    return storeData;
+  }
+
+  return {
+    set: set,
+    get: get
+  }
+}])
+
+storeAppControllers.controller('StoreCtrl', ['$scope', '$http', 'storeInfo', function($scope, $http, storeInfo){
 
   var getStores = function() {
     $http.get('/stores')
@@ -14,12 +30,19 @@ storeAppControllers.controller('StoreCtrl', ['$scope', '$http', function($scope,
 		});
   }
 
+  $scope.saveStoreData = function(id) {
+    storeInfo.set(_.find($scope.stores, function(store) {
+      return store._id === id;
+    }));
+  }
+
   getStores();
 
 }]);
 
-storeAppControllers.controller('StoreFrontCtrl', ['$scope', '$http','$routeParams', function($scope, $http, $routeParams){
+storeAppControllers.controller('StoreFrontCtrl', ['$scope', '$http','$routeParams', 'storeInfo', function($scope, $http, $routeParams, storeInfo){
   $scope.products = [];
+  $scope.store = storeInfo.get();
 
 	var visitStore = function(){
 
@@ -38,9 +61,15 @@ storeAppControllers.controller('StoreFrontCtrl', ['$scope', '$http','$routeParam
 
 }]);
 
+
+var underscore = angular.module('underscore', []);
+underscore.factory('_', ['$window', function($window) {
+  return $window._;
+}]);
+
 (function() {
     angular
-        .module('storeApp', ['ngRoute', 'storeAppControllers'])
+        .module('storeApp', ['ngRoute', 'storeAppControllers', 'underscore'])
         .filter('unique', function() {
           return function(collection, keyname) {
             var output = [],
