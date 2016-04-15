@@ -1,7 +1,11 @@
 <div class="container">
   <h1>Stores list</h1>
   <ul>
-    <li ng-repeat="store in stores"><a href="#/store/{{store._id}}" ng-click="saveStoreData(store._id)">{{store.name}}</a></li>
+    <li ng-repeat="store in stores"><a ui-sref="store({id: store._id})" ng-click="saveStoreData(store._id)">{{store.name}}</a></li>
   </ul>
+
+  <div ui-view>
+
+  </div>
 
 </div>
