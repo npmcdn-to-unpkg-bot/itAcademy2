@@ -11,8 +11,6 @@ app.use(express.static(__dirname + '/public'));
 require('./controllers').set(app);
 
 
-module.exports.start = function(){
-	app.listen(config.port, function () {
-		console.log('Warehouse app listening on port '+ config.port);
-	});
-}()
+app.listen(config.port, function () {
+	console.log('Warehouse app listening on port '+ config.port);
+});
