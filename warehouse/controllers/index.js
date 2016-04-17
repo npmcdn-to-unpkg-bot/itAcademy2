@@ -92,7 +92,7 @@ module.exports.set = function (app) {
     });
 
 
-    app.get('/warehouse', function (req, res) {
+    app.get('/warehouse', function (req, res) {//gets the list of warehouses
         Warehouse.find({}, function (err, data) {
             if (err)
                 return res.send({
@@ -102,7 +102,7 @@ module.exports.set = function (app) {
         });
 
     });
-    app.post('/warehouse', function (req, res) {
+    app.post('/warehouse', function (req, res) {//add new warehouse
         var warehouse = new Warehouse();
         warehouse.nameWarehouse = req.body.nameWarehouse;
         warehouse.date = Date.now();
@@ -111,24 +111,54 @@ module.exports.set = function (app) {
 
         warehouse.save(function (err, saved) {
             if (err || !saved) res.send({error: 'Error while insert a record'});
-            return res.sendStatus(200);
+            return res.send(saved);
         });
     });
-    app.delete('/warehouse/:id', function (req, res) {
-        var filter = {_id: mongojs.ObjectId(req.params.id)};
-        Warehouse.remove(filter, function (err) {
+    app.delete('/warehouse/:id', function (req, res) {//delete warehouse byId
+        Warehouse.remove(req.params.id, function (err, data) {
             if (err)
                 return res.send({error: 'Error while deleting a record'});
-            return res.sendStatus(200);
+            return res.send(data);
         });
 
 
     });
-    app.delete('/warehouse', function (req, res) {
-        Warehouse.remove(function (err) {
+    app.delete('/warehouse', function (req, res) {//delete all warehouses
+        Warehouse.remove(function (err, data) {
             if (err)
-                return res.send({error: 'Error while deleting a records'});
-            return res.sendStatus(200);
+                return res.send({error: 'Error while deleting records'});
+            return res.send(data);
+        });
+
+
+    });
+    //itemSet api
+    app.get('/getItems/:id', function (req, res) {//getItems by warehouse ID
+        Warehouse.findById(req.params.id, function (err, data) {
+            if (err)
+                return res.send({error: 'Error while getting records'});
+            return res.send(data.itemSet);
+        });
+
+
+    });
+    app.post('/items/:id', function (req, res) {//addItemSet in warehouse with ID
+        Warehouse.update({_id: req.params.id}, {$push: {itemSet: {$each: req.body.itemSet}}}, {upsert: true}, function (err, data) {
+            if (err)
+                return res.send({error: 'Error while insert items'});
+            return res.send(data);
+        });
+
+
+    });
+    app.put('/items/:id', function (req, res) {//replace ItemSet in warehouse with ID
+        var listOfItems = _.map(req.body.itemSet, function (val) {
+            return val;
+        })
+        Warehouse.update({_id: req.params.id}.where('itemSet').in(listOfItems), {$push: {itemSet: {$each: req.body.itemSet}}}, {upsert: true}, function (err, data) {
+            if (err)
+                return res.send({error: 'Error while insert items'});
+            return res.send(data);
         });
 
 
