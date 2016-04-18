@@ -4,21 +4,34 @@
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
+var morgan = require('morgan');             // log requests to the console (express4)
+var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
+var methodOverride = require('method-override');
 
 
 mongoose.connect('mongodb://elifuser:qwerty12@ds015710.mlab.com:15710/elifbankdb');
 
-app.use(express.static(__dirname + '/bank/public'));
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({'extended':'true'}));
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
+app.use(methodOverride());
 
+app.use(express.static(__dirname + '/public'));
 
 var Account = mongoose.model('Account', {
     login : String,
     password : String,
     amount : Number
+});
+
+var Transaction = mongoose.model('Transaction', {
+    token: String,
+    time: Date,
+    Source: Number,
+    Destination: Number,
+    Amount: Number
 });
 
 app.get('/api/accounts', function(req, res) {
@@ -31,7 +44,7 @@ app.get('/api/accounts', function(req, res) {
     });
 });
 
-app.post('api/accounts', function(req, res)
+app.post('/api/accounts', function(req, res)
 {
     Account.create({
         login : req.body.login,
@@ -65,7 +78,7 @@ app.delete('/api/accounts/:account_id', function(req, res) {
             {
                 res.send(err);
             }
-            res.json(todos);
+            res.json(accounts);
         });
     });
 });
