@@ -1,0 +1,60 @@
+<div class="col-sm-5 top-buffer">
+    <div class="control-group">
+        <div class="input-group">
+            <span class="input-group-addon">Name</span>
+            <input type="text" class="form-control input-sm" placeholder="of warehouse"
+                   ng-model='warehouse.nameWarehouse' required
+            >
+        </div>
+    </div>
+    <div class="control-group">
+
+        <div class="input-group">
+            <span class="input-group-addon">Password</span>
+            <input type="password" class="form-control input-sm"
+                   placeholder="type your password for account in bank"
+                   ng-model='warehouse.warehousePassword'>
+        </div>
+        <button class='btn btn-primary btn-sm top-buffer' ng-click='addWarehouse()'><span
+                class="glyphicon glyphicon-plus"></span>Add warehouse
+        </button>
+    </div>
+</div>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>temporary part</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><input class='form-control input-sm' ng-model='warehouse.nameWarehouse'></td>
+        <td><input class='form-control input-sm' ng-model='warehouse.warehouseAccount'></td>
+        <td>
+
+        </td>
+        <td>
+            <button class='btn btn-danger btn-sm' ng-click='removeWarehouses()'><span
+                    class="glyphicon glyphicon-remove"></span>RemoveAll
+            </button>
+        </td>
+    </tr>
+    <tr ng-repeat='warehouse in warehouseList'>
+        <td>{{warehouse.nameWarehouse}}</td>
+        <td>{{warehouse.warehouseAccount}}</td>
+        <td>
+            <button class='btn btn-sm btn-danger' ng-click='removeWarehouse(warehouse._id)'><span
+                    class="glyphicon glyphicon-remove"></span>Remove
+            </button>
+        </td>
+        <td>
+            <button class='btn btn-primary btn-sm' ng-click='editWarehouse()'><span
+                    class="glyphicon glyphicon-pencil"></span>Edit
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>

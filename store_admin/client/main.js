@@ -20,8 +20,13 @@ myApp.config(function ($routeProvider) {
       controller: 'registerController',
       access: {restricted: false}
     })
-    .when('/admin', {
-      template: '<h1>This is admin page</h1>'
+    .when('/one', {
+      template: '<h1>This is page one!</h1>',
+      access: {restricted: true}
+    })
+    .when('/two', {
+      template: '<h1>This is page two!</h1>',
+      access: {restricted: false}
     })
     .otherwise({
       redirectTo: '/'
@@ -29,12 +34,13 @@ myApp.config(function ($routeProvider) {
 });
 
 myApp.run(function ($rootScope, $location, $route, AuthService) {
-    $rootScope.$on('$routeChangeStart',
-        function(event, next, current) {
-            AuthService.getUserStatus();
-            if (next.access.restricted && !AuthService.isLoggerIn()) {
-                $location.path('/login');
-                $route.reload();
-            }
-    });
+  $rootScope.$on('$routeChangeStart',
+    function (event, next, current) {
+      AuthService.getStoreStatus();
+      if (next.access.restricted &&
+          !AuthService.isLoggedIn()) {
+        $location.path('/login');
+        $route.reload();
+      }
+  });
 });

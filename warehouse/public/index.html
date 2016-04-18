@@ -1,36 +1,33 @@
 <!DOCTYPE>
 <html ng-app='app'>
-	<head>
-		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js'></script>
-		<script src='controllers/mainController.js'></script>
-		
-		<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
-		<title>Admin panel for warehouses</title>
-	</head>
-	<body>
-		<div class="container" ng-controller='mainController'>
-			<table class="table">
-				<thead>
-					<tr>
-						<th>Warehouses</th>
-						<th>Account</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr >
-						<td><input class='form-control input-sm' ng-model='warehouse.nameWarehouse'></td>
-						<td><input class='form-control input-sm' ng-model='warehouse.warehouseAccount'></td>
-						<td><button class='btn btn-primary btn-sm' ng-click='addWarehouse()'><span class="glyphicon glyphicon-plus"></span>Add warehouse</button></td>
-						<td><button class='btn btn-danger btn-sm' ng-click='removeWarehouses()'><span class="glyphicon glyphicon-remove"></span>RemoveAll</button></td>
-					</tr>
-					<tr ng-repeat='warehouse in warehouseList'>
-						<td>{{warehouse.nameWarehouse}}</td>
-						<td>{{warehouse.warehouseAccount}}</td>
-						<td><button class='btn btn-sm btn-danger' ng-click='removeWarehouse(warehouse._id)'><span class="glyphicon glyphicon-remove"></span>Remove</button></td>
-						<td><button class='btn btn-primary btn-sm' ng-click='editWarehouse()'><span class="glyphicon glyphicon-pencil"></span>Edit</button></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</body>
+<head>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js'></script>
+    <script src="//angular-ui.github.io/ui-router/release/angular-ui-router.js"></script>
+    <script src='controllers/mainController.js'></script>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+    <link href="main.css" rel="stylesheet">
+    <title>Admin panel for warehouses</title>
+</head>
+<body>
+<div class="container" ng-controller='mainController'>
+
+    <ul class="nav nav-tabs">
+        <li role="presentation" ng-class="{active: $route.current.activetab == 'index'}"><a ui-sref="index">Main</a></li>
+        <li role="presentation" ng-class="{active: $route.current.activetab == 'warehouses'}"><a ui-sref="warehouses">Warehouses</a></li>
+        <li role="presentation"ng-class="{active: $route.current.activetab == 'items'}"><a ui-sref="items">Items</a></li>
+    </ul>
+
+    <div class="well" ui-view></div>
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+</body>
 </html>

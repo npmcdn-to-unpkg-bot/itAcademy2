@@ -1,9 +1,11 @@
-var mongoose = require('mongose');
+// store model
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var passportLocalMongoose = require('passport-local-mongoose');
 
+
 var Store = new Schema({
-    name: {
+    storename: {
         type: String,
         required: true
      },
@@ -21,4 +23,7 @@ var Store = new Schema({
     }
 });
 
-module.export = mongoose.model('stores', Store);
+Store.plugin(passportLocalMongoose);
+
+
+module.exports = mongoose.model('stores', Store);
