@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
-    <script type="text/javascript" src="../public/core.js"></script>
+    <script type="text/javascript" src="core.js"></script>
 </head>
 
 <body ng-controller="mainController">
@@ -26,7 +26,7 @@
             <h1>Welcome to bank <span class="label label-info">{{accounts.length}}</span></h1>
         </div>
 
-        <div id="account-list" class="row">
+        <div id="todo-list" class="row">
             <div class="col-sm-4 col-sm-offset-4">
                 <div class="checkbox" ng-repeat="account in accounts">
                     <label>
@@ -42,7 +42,7 @@
                     <div class="form-group">
 
                         <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.login">
-                        <input type="text" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password"
+                        <input type="text" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg" ng-click="createAccount()">Register</button>
