@@ -50,7 +50,72 @@ var mainController = ['$scope', '$http', '$location', function ($scope, $http, $
         }
 
     };
-    //items
+    //items_collection
+    var getListOfItems = function () {
+        $http.get('/item')
+            .then(function (res) {
+                if (res.data.error)
+                    return console.log(res.data.error);
+                $scope.itemList = res.data;
+                $scope.item = {};
+            }, function (err) {
+                console.log(err);
+            });
+    };
+
+    getListOfItems();
+    $scope.addItem = function () {
+        $http.post('/item', $scope.item)
+            .then(function (res) {
+                getListOfItems();
+            }, function (err) {
+                console.log(err);
+            });
+    };
+    $scope.removeItem = function (id) {
+        $http.delete('/item/' + id)
+            .then(function (res) {
+                getListOfItems();
+            }, function (err) {
+                console.log(err);
+            });
+    };
+    $scope.editItem = function (id, name, description, image, category) {
+        var target = document.querySelector('#saveItemButton');
+        target.dataset.id = id;
+        $scope.item.name = name;
+        $scope.item.description = description;
+        $scope.item.image = image;
+        $scope.item.category = category;
+    };
+    $scope.saveItem = function () {
+        var target = document.querySelector('#saveItemButton');
+
+        $http.put('/item/' + target.dataset.id, $scope.item)
+            .then(function (res) {
+                getListOfItems();
+            }, function (err) {
+                console.log(err);
+            });
+    };
+    //edit itemSet in warehouses
+    $scope.editItemSet = function (id) {
+        var target = document.getElementById(id);
+        target.hidden=false;
+    };
+    $scope.addItemToSet = function (id) {
+        $http.put('/item/' + id, $scope.itemSet)
+            .then(function (res) {
+                //getListOfItems();
+            }, function (err) {
+                console.log(err);
+            });
+    };
+    $scope.addItemCansel= function (id) {
+        var target = document.getElementById(id);
+        target.hidden=true;
+    };
+
 }];
 
 (function () {

@@ -115,7 +115,7 @@ module.exports.set = function (app) {
         });
     });
     app.delete('/warehouse/:id', function (req, res) {//delete warehouse byId
-        Warehouse.remove(req.params.id, function (err, data) {
+        Warehouse.findByIdAndRemove(req.params.id, function (err, data) {
             if (err)
                 return res.send({error: 'Error while deleting a record'});
             return res.send(data);
@@ -151,7 +151,7 @@ module.exports.set = function (app) {
 
 
     });
-    app.put('/items/:id', function (req, res) {//replace ItemSet in warehouse with ID
+    app.put('/items/:id', function (req, res) {//TODO change ItemSet in warehouse with ID
         var listOfItems = _.map(req.body.itemSet, function (val) {
             return val;
         })
@@ -160,7 +160,63 @@ module.exports.set = function (app) {
                 return res.send({error: 'Error while insert items'});
             return res.send(data);
         });
+    });
+    app.post('/items/:id', function (req, res) {//add ItemSet in warehouse with ID
+        var listOfItems = _.map(req.body.itemSet, function (val) {
+            return val;
+        })
 
+        Warehouse.update({_id: req.params.id}.where('itemSet').in(listOfItems), {$push: {itemSet: {$each: req.body.itemSet}}}, {upsert: true}, function (err, data) {
+            if (err)
+                return res.send({error: 'Error while insert items'});
+            return res.send(data);
+        });
+    });
+    //items api
+    app.get('/item', function (req, res) {
+        Item.find({}, function (err, data) {
+            if (err)
+                return res.send({
+                    error: 'Error while making response'
+                });
+            return res.send(data);
+        });
 
     });
+    app.post('/item', function (req, res) {//add new item
+        var item = new Item();
+        item.name = req.body.name;
+        item.description = req.body.description;
+        item.image = req.body.image;
+        item.category = req.body.category;
+        item.save(function (err, saved) {
+            if (err || !saved) res.send({error: 'Error while insert a record'});
+            return res.send(saved);
+        });
+    });
+    app.put('/item/:id', function (req, res) {//change item
+        Item.findByIdAndUpdate(req.params.id, {
+            $set: {
+                name: req.body.name,
+                description: req.body.description,
+                image: req.body.image,
+                category: req.body.category
+            }
+        }, function (err, item) {
+            if (err) res.send({error: 'Error while saving a record'});
+            res.send(item);
+        });
+    })
+
+
+    app.delete('/item/:id', function (req, res) {//delete item byId
+
+        Item.findByIdAndRemove(req.params.id, function (err, data) {
+            if (err)
+                return res.send({error: 'Error while deleting a record'});
+            return res.send(data);
+        });
+    });
+
+
 }

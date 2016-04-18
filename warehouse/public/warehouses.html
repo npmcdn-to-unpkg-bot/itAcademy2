@@ -6,52 +6,81 @@
                    ng-model='warehouse.nameWarehouse' required
             >
         </div>
-    </div>
-    <div class="control-group">
-
         <div class="input-group">
             <span class="input-group-addon">Password</span>
             <input type="password" class="form-control input-sm"
                    placeholder="type your password for account in bank"
                    ng-model='warehouse.warehousePassword'>
         </div>
-        <button class='btn btn-primary btn-sm top-buffer' ng-click='addWarehouse()'><span
+        <button class='btn btn-success btn-sm top-buffer' ng-click='addWarehouse()'><span
                 class="glyphicon glyphicon-plus"></span>Add warehouse
         </button>
+        <button class='btn btn-danger btn-sm top-buffer' ng-click='removeWarehouses()'><span
+                class="glyphicon glyphicon-remove"></span>RemoveAll
+        </button>
+
     </div>
+
 </div>
 
 
-<table class="table">
+<table class="table table-hover">
     <thead>
     <tr>
-        <th>temporary part</th>
-
+        <th>&nbsp;</th>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Account</th>
+        <th>Set of Items</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td><input class='form-control input-sm' ng-model='warehouse.nameWarehouse'></td>
-        <td><input class='form-control input-sm' ng-model='warehouse.warehouseAccount'></td>
-        <td>
-
-        </td>
-        <td>
-            <button class='btn btn-danger btn-sm' ng-click='removeWarehouses()'><span
-                    class="glyphicon glyphicon-remove"></span>RemoveAll
-            </button>
-        </td>
-    </tr>
     <tr ng-repeat='warehouse in warehouseList'>
+        <td><input type="checkbox" ng-checked="{{warehouse.available}}"></td>
+        <td>{{warehouse.date| date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{warehouse.nameWarehouse}}</td>
         <td>{{warehouse.warehouseAccount}}</td>
-        <td>
-            <button class='btn btn-sm btn-danger' ng-click='removeWarehouse(warehouse._id)'><span
-                    class="glyphicon glyphicon-remove"></span>Remove
+        <td>{{warehouse.itemSet}}
+            <div id="{{warehouse._id}}" hidden>
+                <fieldset class="form-group">
+                    <select class="form-control" id="selectItems">
+                        <option ng-repeat='item in itemList' value="{{item.id}}">{{item.name}}</option>
+                    </select>
+                    <div class="input-group">
+                        <span class="input-group-addon">$</span>
+                        <input type="number" class="form-control input-sm"
+                               placeholder="price per item"
+                               ng-model='itemSet.price'>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Σ</span>
+                        <input type="number" class="form-control input-sm"
+                               placeholder="amount"
+                               ng-model='itemSet.amount'>
+                    </div>
+                </fieldset>
+                <button class='btn btn-success btn-sm' title="Add item to set"
+                        ng-click='addItemToSet(warehouse._id)'><span
+                        class="glyphicon glyphicon-plus"></span>Add
+                </button>
+                <button class='btn btn-primary btn-sm' title="Cansel"
+                        ng-click='addItemCansel(warehouse._id)'><span
+                        class="glyphicon glyphicon-share-alt"></span>Cansel
+                </button>
+            </div>
+
+
+            <button class='btn btn-primary btn-sm' ng-click='editItemSet(warehouse._id)' title="Edit warehouse"><span
+                    class="glyphicon glyphicon-pencil"></span>Edit
             </button>
         </td>
         <td>
-            <button class='btn btn-primary btn-sm' ng-click='editWarehouse()'><span
+            <button class='btn btn-sm btn-danger' ng-click='removeWarehouse(warehouse._id)'
+                    title="Remove warehouse"><span
+                    class="glyphicon glyphicon-remove"></span>Remove
+            </button>
+            <button class='btn btn-primary btn-sm' ng-click='editWarehouse()' title="Edit warehouse"><span
                     class="glyphicon glyphicon-pencil"></span>Edit
             </button>
         </td>
