@@ -1,22 +1,6 @@
 var storeAppControllers = angular.module('storeAppControllers', ['underscore'])
 
-storeAppControllers.factory('storeInfo', [function() {
-  var storeData = {};
-
-  function set(data) {
-    storeData = data;
-  }
-  function get() {
-    return storeData;
-  }
-
-  return {
-    set: set,
-    get: get
-  }
-}])
-
-storeAppControllers.controller('StoreCtrl', ['$scope', '$http', 'storeInfo', function($scope, $http, storeInfo){
+storeAppControllers.controller('StoreCtrl', ['$cookies', '$scope', '$http', function($cookies, $scope, $http){
 
   var getStores = function() {
     $http.get('/stores')
@@ -31,18 +15,19 @@ storeAppControllers.controller('StoreCtrl', ['$scope', '$http', 'storeInfo', fun
   }
 
   $scope.saveStoreData = function(id) {
-    storeInfo.set(_.find($scope.stores, function(store) {
+    var data = _.find($scope.stores, function(store) {
       return store._id === id;
-    }));
+    })
+    $cookies.putObject("store", data);
   }
 
   getStores();
 
 }]);
 
-storeAppControllers.controller('StoreFrontCtrl', ['$scope', '$http','$stateParams', 'storeInfo', function($scope, $http, $stateParams, storeInfo){
+storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', function($cookies, $scope, $http, $stateParams) {
   $scope.products = [];
-  $scope.store = storeInfo.get();
+  $scope.store = $cookies.getObject('store');
 
 	var visitStore = function(){
 
@@ -50,7 +35,6 @@ storeAppControllers.controller('StoreFrontCtrl', ['$scope', '$http','$stateParam
 		.then(function(res){
 			if (res.data.error)
 				return console.log(res.data.error);
-
 
 			$scope.products = res.data;
 		}, function(err){
@@ -62,8 +46,13 @@ storeAppControllers.controller('StoreFrontCtrl', ['$scope', '$http','$stateParam
 
 }]);
 
-storeAppControllers.controller('LoginCtrl', ['$scope', '$http', function($scope, $http, storeInfo){
-  console.log("LoginCtrl working!");
+storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
+  $scope.store = $cookies.getObject('store');
+  this.user = {"storeId": $scope.store._id};
+
+  this.addUser = function (user) {
+    console.log(user);
+  }
 }]);
 
 var underscore = angular.module('underscore', []);
@@ -73,7 +62,7 @@ underscore.factory('_', ['$window', function($window) {
 
 (function() {
     angular
-        .module('storeApp', ['ngRoute', 'storeAppControllers', 'underscore', 'ui.router'])
+        .module('storeApp', ['storeAppControllers', 'underscore', 'ui.router', 'ngCookies'])
         .filter('unique', function() {
           return function(collection, keyname) {
             var output = [],
@@ -89,26 +78,34 @@ underscore.factory('_', ['$window', function($window) {
             return output;
           };
         })
-        .config(['$stateProvider', '$urlRouterProvider',
-        function($stateProvider, $urlRouterProvider) {
+        .config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
+        function($stateProvider, $urlRouterProvider, $locationProvider) {
 
-          $urlRouterProvider.otherwise("");
+          $urlRouterProvider.otherwise("/");
 
           $stateProvider.
           state('list', {
-            url: '',
+            url: '/',
             templateUrl: 'partials/storesList.html',
             controller: 'StoreCtrl'
           }).
           state('store', {
-            url: 'store/:id',
+            url: '/store/:id',
             templateUrl: 'partials/storeFront.html',
             controller: 'StoreFrontCtrl'
           }).
+          state('store.register', {
+            url: '/register',
+            templateUrl: 'partials/register.html',
+            controller: 'RegisterCtrl'
+          }).
           state('store.login', {
-            templateUrl: 'partials/login.html',
-            controller: 'LoginCtrl'
+            url: '/login',
+            templateUrl: 'partials/login.html'
+            //controller: 'RegisterCtrl'
           });
-        }]);
+
+          $locationProvider.html5Mode(true);
+        }])
 
 })();

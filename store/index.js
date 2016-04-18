@@ -2,13 +2,15 @@ var express = require('express');
 var app = express();
 var config = require('./config');
 var cookieParser = require('cookie-parser');
+var path = require('path');
 app.use(cookieParser());
 
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+
 app.use(express.static(__dirname + '/public'));
 
 require('./controllers').set(app);
