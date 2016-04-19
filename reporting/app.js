@@ -212,34 +212,35 @@ app.get('/shop/report1', function(req, res) {
 });
 
 app.get('/warehouse/report1', function(req, res) {
-    var ret = [];
-    function getName(id, fieldName, collection) {
-        for (var i = 0; i < collection.length; i++) {
-            if (collection[i]["_id"].toString() === id) {
-                return collection[i][fieldName];
-                break;
-            }
-        }
-    };
+var ret = [];
 
-    item.find({}, function(err, itemsCollection) {
+function getName(id, fieldName, collection) {
+    for (var i = 0; i < collection.length; i++) {
+        if (collection[i]["_id"].toString() === id) {
+            return collection[i][fieldName];
+            break;
+        }
+    }
+};
+
+item.find({}, function(err, itemsCollection) {
+    if (err) return console.log(err);
+    itemSet.find({}, function(err, items) {
         if (err) return console.log(err);
-        itemSet.find({}, function(err, items) {
+        stores.find({}, function(err, stores) {
             if (err) return console.log(err);
-            stores.find({}, function(err, stores) {
-                if (err) return console.log(err);
-                for (var i = 0; i < items.length; i++) {
-                    var obj = {}
-                    obj.price = items[i].price;
-                    obj.count = items[i].count;
-                    obj.itemTitle = getName(items[i].itemId.toString(), 'title', itemsCollection);
-                    obj.storeTitle = getName(items[i].storeId.toString(), 'name', stores);
-                    ret.push(obj);
-                }
-                res.json(ret)
-            })
+            for (var i = 0; i < items.length; i++) {
+                var obj = {}
+                obj.price = items[i].price;
+                obj.count = items[i].count;
+                obj.itemTitle = getName(items[i].itemId.toString(), 'title', itemsCollection);
+                obj.storeTitle = getName(items[i].storeId.toString(), 'name', stores);
+                ret.push(obj);
+            }
+            res.json(ret)
         })
-    });
+    })
+});
 
 });
 
@@ -317,31 +318,31 @@ app.get('/warehouse/report1', function(req, res) {
 //         })
 //     });
 
-    // itemSet.find({}, function(err, items) {
-    //     if (err) return console.log(err);
-    //     //console.log(data);
-    //     //res.json(data)
-    //     console.log(items[0].itemId);
-    //     // item.find({},function(err, itemsCollection){
-    //     //   if (err) return console.log(err);
-    //     //   for (var i=0;i<items.length;i++){
-    //     //     var obj = {};
-    //     //     obj.price = items[i].price;
-    //     //     obj.count = items[i].count;
-    //     //     console.log(items[i].storeId);
-    //     //     //console.log(getItemName(items[i].itemId,itemsCollection));
-    //     //     obj.itemTitle = getItemName(items[i].itemId,itemsCollection);
-    //     //     ret.push(obj);
-    //     //   }
-    //     //   //console.log(ret);
-    //     //   //console.log(itemsCollection);
-    //     //   //console.log(items);
-    //     //       res.json(items[0].itemId)
-    //     // })
-    // })
+// itemSet.find({}, function(err, items) {
+//     if (err) return console.log(err);
+//     //console.log(data);
+//     //res.json(data)
+//     console.log(items[0].itemId);
+//     // item.find({},function(err, itemsCollection){
+//     //   if (err) return console.log(err);
+//     //   for (var i=0;i<items.length;i++){
+//     //     var obj = {};
+//     //     obj.price = items[i].price;
+//     //     obj.count = items[i].count;
+//     //     console.log(items[i].storeId);
+//     //     //console.log(getItemName(items[i].itemId,itemsCollection));
+//     //     obj.itemTitle = getItemName(items[i].itemId,itemsCollection);
+//     //     ret.push(obj);
+//     //   }
+//     //   //console.log(ret);
+//     //   //console.log(itemsCollection);
+//     //   //console.log(items);
+//     //       res.json(items[0].itemId)
+//     // })
+// })
 
 
-});
+//});
 
 app.get('/warehouse', function(req, res) {
     console.log("warehouse");
