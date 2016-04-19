@@ -21,6 +21,7 @@ userSchema.add({
   },
   email: {
     type: String,
+    unique: true
   },
   class: {
     type: String,
@@ -37,5 +38,9 @@ userSchema.add({
     type: Number
   }
 });
+
+userSchema.methods.validPassword = function(pwd) {
+  return pwd === this.password
+};
 
 module.exports = mongoose.model('User', userSchema, 'users');

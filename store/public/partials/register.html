@@ -1,30 +1,33 @@
 <div class="row">
   <h2>Please fill in the form:</h2>
-    <form class="col s12" name="addUserForm" ng-submit="RegisterCtrl.addUser(user)" novalidate>
+    <form class="col s12" name="addUserForm" ng-submit="addUserForm.$valid && addUser(user)" novalidate>
       <div class="row">
         <div class="input-field col s6" >
-          <input id="first_name" type="text" class="validate" ng-model="RegisterCtrl.user.name" required>
+          <input id="first_name" type="text" class="validate" ng-model="user.name" required>
           <label for="first_name">First Name</label>
         </div>
         <div class="input-field col s6">
-          <input id="last_name" type="text" class="validate" ng-model="RegisterCtrl.user.surname" required>
+          <input id="last_name" type="text" class="validate" ng-model="user.surname" required>
           <label for="last_name">Last Name</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
-          <input id="email" type="email" class="validate" ng-model="RegisterCtrl.user.email" required>
+          <input id="email" type="email" class="validate" ng-model="user.email" required>
           <label for="email">Email</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
-          <input id="password" type="password" class="validate" ng-model="RegisterCtrl.user.password" required>
+          <input id="password" type="password" class="validate" ng-model="user.password" required>
           <label for="password">Password</label>
         </div>
       </div>
-      <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+      <button type="submit" name="action" ng-class="{'btn disabled': addUserForm.$invalid, 'btn waves-effect waves-light': addUserForm.$valid }">Submit
         <i class="material-icons right">send</i>
       </button>
+      <div ng-show="error" class="error">
+        <span>{{error}}</span><a ui-sref="store.login">Log in</a>
+      </div>
     </form>
   </div>

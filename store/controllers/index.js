@@ -4,9 +4,12 @@ var app = express();
 var Store = require('../models').Store;
 var ItemSet = require('../models').ItemSet;
 var Item = require('../models').Item;
+var User = require('../models').User;
 
 var _ = require('underscore');
 var Promise = require('bluebird');
+
+var passport = require('../libs/passport');
 
 module.exports.set = function(app) {
 
@@ -47,6 +50,23 @@ module.exports.set = function(app) {
 			return console.log(err);
 		});
 	});
+
+	app.post('/add_user', function (req, res) {
+		var user = {
+			storeId: req.body.storeId,
+			name: req.body.name,
+			surname: req.body.surname,
+			email: req.body.email,
+			password: req.body.password,
+			class: 'registered'
+		};
+
+		User.create(user, function(err, data) {
+			if (err) {res.status(400).send({error: err.message})};
+
+			console.log(data);
+		});
+	})
 
 	app.all('*', function(req, res, next) {
 		// Just send the index.html for other files to support HTML5Mode

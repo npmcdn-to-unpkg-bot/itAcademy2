@@ -48,10 +48,21 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
 storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
   $scope.store = $cookies.getObject('store');
-  this.user = {"storeId": $scope.store._id};
+  $scope.user = {"storeId": $scope.store._id};
 
-  this.addUser = function (user) {
-    console.log(user);
+  $scope.addUser = function (user) {
+    $http.post('/add_user', user)
+		.then(function(res){
+
+			$scope.user = {"storeId": $scope.store._id};
+		}, function(err){
+      console.log(err);
+
+      if (err.data.error.indexOf('E11000') !== -1) {
+        $scope.error = "User with same email is already registered. Please "
+      }
+
+		});
   }
 }]);
 
