@@ -1,3 +1,35 @@
 <div class="container">
     <h4>warehouse report 1 template</h4>
+    <style>
+      .st-sort-ascent:before{
+        content: '\25B2';
+      }
+      .st-sort-descent:before{
+        content: '\25BC';
+      }
+
+    </style>
+
+    <table st-table="warehouseReport1Data" st-safe-src="warehouseReport1Data" class="table table-striped">
+    	<thead>
+    	<tr>
+            <th st-sort="_id">_id</th>
+    		<th st-sort="count">count</th>
+    		<th st-sort="itemId">itemId</th>
+    		<th st-sort="originalPrice">originalPrice</th>
+            <th st-sort="price">price</th>
+    		<th st-sort="storeId">storeId</th>
+    	</tr>
+    	</thead>
+    	<tbody>
+    	<tr ng-repeat="row in warehouseReport1Data">
+            <td>{{row._id}}</td>
+            <td>{{row.count}}</td>
+    		<td>{{row.itemId}}</td>
+    		<td>{{row.originalPrice}}</td>
+    		<td>{{row.price}}</td>
+    		<td>{{row.storeId}}</td>
+    	</tr>
+    	</tbody>
+    </table>
 </div>

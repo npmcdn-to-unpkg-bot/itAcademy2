@@ -1,3 +1,34 @@
 <div class="container">
     <h4>shop report 1 template</h4>
+
+    <style>
+      .st-sort-ascent:before{
+        content: '\25B2';
+      }
+      .st-sort-descent:before{
+        content: '\25BC';
+      }
+
+    </style>
+
+    <table st-table="shopReport1Data" st-safe-src="shopReport1Data" class="table table-striped">
+    	<thead>
+    	<tr>
+            <th st-sort="storeTitle">Store TItle</th>
+    		<th st-sort="itemTitle">Item Title</th>
+    		<th st-sort="price">Price</th>
+    		<th st-sort="count">Ammount</th>
+    	</tr>
+    	</thead>
+    	<tbody>
+    	<tr ng-repeat="row in shopReport1Data">
+            <td>{{row.storeTitle}}</td>
+            <td>{{row.itemTitle}}</td>
+    		<td>{{row.price}}</td>
+    		<td>{{row.count}}</td>
+    	</tr>
+    	</tbody>
+    </table>
+
+
 </div>
