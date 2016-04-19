@@ -3,10 +3,8 @@ var storeAppControllers = angular.module('storeAppControllers', ['underscore'])
 storeAppControllers.controller('StoreCtrl', ['$cookies', '$scope', '$http', function($cookies, $scope, $http){
 
   var getStores = function() {
-    $http.get('/stores')
+    $http.get('api/stores')
 		.then(function(res){
-			if (res.data.error)
-				return console.log(res.data.error);
 
 			$scope.stores = res.data;
 		}, function(err){
@@ -28,10 +26,17 @@ storeAppControllers.controller('StoreCtrl', ['$cookies', '$scope', '$http', func
 storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', function($cookies, $scope, $http, $stateParams) {
   $scope.products = [];
   $scope.store = $cookies.getObject('store');
+  $scope.user = $cookies.getObject('user');
+
+  if ($scope.user) {
+    $scope.user = _.pick($scope.user.data, 'name', 'surname', 'email', 'storeId', 'cart');
+  }
+
+  console.log($scope.user);
 
 	var visitStore = function(){
 
-    $http.get('/store/' + $stateParams.id)
+    $http.get('api/store/' + $stateParams.id)
 		.then(function(res){
 			if (res.data.error)
 				return console.log(res.data.error);
@@ -44,20 +49,26 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   visitStore();
 
+  $scope.logout = function () {
+    $cookies.remove('user');
+    delete $scope.user;
+
+    $state.go('store', {id: $scope.store._id});
+  }
+
 }]);
 
-storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
+storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '$state', function($scope, $http, $cookies, $state){
   $scope.store = $cookies.getObject('store');
-  $scope.user = {"storeId": $scope.store._id};
+  $scope.formData = {"storeId": $scope.store._id};
 
-  $scope.addUser = function (user) {
-    $http.post('/add_user', user)
+  $scope.addUser = function (formData) {
+    $http.post('api/add_user', formData)
 		.then(function(res){
+      $cookies.putObject('user', res);
+      $state.go('store', {id: $scope.store._id});
 
-			$scope.user = {"storeId": $scope.store._id};
 		}, function(err){
-      console.log(err);
-
       if (err.data.error.indexOf('E11000') !== -1) {
         $scope.error = "User with same email is already registered. Please "
       }

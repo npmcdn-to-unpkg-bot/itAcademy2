@@ -13,7 +13,7 @@ var passport = require('../libs/passport');
 
 module.exports.set = function(app) {
 
-	app.get('/stores', function (req, res) {
+	app.get('/api/stores', function (req, res) {
 
 		Store.find({}, function(err, docs) {
 			if (err) console.log(err);
@@ -24,7 +24,7 @@ module.exports.set = function(app) {
 	});
 
 	// created itemsToSend in order to form and populate array of products for the store
-	app.get('/store/:id', function (req, res) {
+	app.get('/api/store/:id', function (req, res) {
 		var storeId = req.params.id;
 		var storeItems = [];
 
@@ -51,7 +51,7 @@ module.exports.set = function(app) {
 		});
 	});
 
-	app.post('/add_user', function (req, res) {
+	app.post('/api/add_user', function (req, res) {
 		var user = {
 			storeId: req.body.storeId,
 			name: req.body.name,
@@ -61,11 +61,16 @@ module.exports.set = function(app) {
 			class: 'registered'
 		};
 
-		User.create(user, function(err, data) {
-			if (err) {res.status(400).send({error: err.message})};
+		User.create(user)
+		.then(function(data) {
+			var user = _.pick(data, 'name', 'surname', 'email', 'storeId', 'cart');
 
-			console.log(data);
+			return res.send(user);
+		})
+		.catch(function(err){
+			return res.status(400).send({error: err.message})
 		});
+
 	})
 
 	app.all('*', function(req, res, next) {

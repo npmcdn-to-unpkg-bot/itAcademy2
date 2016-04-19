@@ -3,16 +3,20 @@
 
     <nav>
       <div class="nav-wrapper">
-        <a href="#!" class="brand-logo">{{store.name}}</a>
+        <a ui-sref="store({id: store._id})" class="brand-logo">{{store.name}}</a>
         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
         <ul class="right hide-on-med-and-down">
-          <li><a ui-sref="store.login">Log in</a></li>
-          <li><a ui-sref="store.register">Register</a></li>
+          <li>{{user.name}}</li>
+          <li><a ui-sref="store.login" ng-hide="user">Log in</a></li>
+          <li ng-show="user"><a ng-click="logout()">Log out</a></li>
+          <li><a ui-sref="store.register" ng-hide="user">Register</a></li>
           <li><a href="#">Cart</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
-          <li><a ui-sref="store.login">Log in</a></li>
-          <li><a ui-sref="store.register">Register</a></li>
+          <li>{{user.name}}</li>
+          <li><a ui-sref="store.login" ng-hide="user">Log in</a></li>
+          <li ng-show="user"><a ng-click="logout()">Log out</a></li>
+          <li><a ui-sref="store.register" ng-hide="user">Register</a></li>
           <li><a href="#">Cart</a></li>
         </ul>
       </div>
