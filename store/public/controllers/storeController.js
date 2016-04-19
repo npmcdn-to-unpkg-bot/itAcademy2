@@ -23,14 +23,10 @@ storeAppControllers.controller('StoreCtrl', ['$cookies', '$scope', '$http', func
 
 }]);
 
-storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', function($cookies, $scope, $http, $stateParams) {
+storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', '$state',  function($cookies, $scope, $http, $stateParams) {
   $scope.products = [];
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
-
-  if ($scope.user) {
-    $scope.user = _.pick($scope.user.data, 'name', 'surname', 'email', 'storeId', 'cart');
-  }
 
   console.log($scope.user);
 
@@ -65,7 +61,8 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
   $scope.addUser = function (formData) {
     $http.post('api/add_user', formData)
 		.then(function(res){
-      $cookies.putObject('user', res);
+      var user = res.data;
+      $cookies.putObject('user', user);
       $state.go('store', {id: $scope.store._id});
 
 		}, function(err){
@@ -76,6 +73,27 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
 		});
   }
 }]);
+
+storeAppControllers.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$state', function($scope, $http, $cookies, $state){
+  $scope.store = $cookies.getObject('store');
+  $scope.formData = {"storeId": $scope.store._id};
+
+  $scope.loginUser = function (formData) {
+    $http.post('api/login_user', formData)
+		.then(function(res){
+      var user = res.data;
+      $cookies.putObject('user', user);
+      $state.go('store', {id: $scope.store._id});
+
+		}, function(err){
+      if (err.data.error.indexOf('E11000') !== -1) {
+        $scope.error = "User with same email is already registered. Please "
+      }
+
+		});
+  }
+}]);
+
 
 var underscore = angular.module('underscore', []);
 underscore.factory('_', ['$window', function($window) {
@@ -114,7 +132,8 @@ underscore.factory('_', ['$window', function($window) {
           state('store', {
             url: '/store/:id',
             templateUrl: 'partials/storeFront.html',
-            controller: 'StoreFrontCtrl'
+            controller: 'StoreFrontCtrl',
+            reload: true
           }).
           state('store.register', {
             url: '/register',
@@ -123,8 +142,8 @@ underscore.factory('_', ['$window', function($window) {
           }).
           state('store.login', {
             url: '/login',
-            templateUrl: 'partials/login.html'
-            //controller: 'RegisterCtrl'
+            templateUrl: 'partials/login.html',
+            controller: 'LoginCtrl'
           });
 
           $locationProvider.html5Mode(true);

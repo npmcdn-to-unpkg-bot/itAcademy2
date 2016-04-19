@@ -73,6 +73,25 @@ module.exports.set = function(app) {
 
 	})
 
+	app.post('/api/login_user', function (req, res) {
+		var user = {
+			storeId: req.body.storeId,
+			email: req.body.email,
+			password: req.body.password
+		};
+
+		User.findOne(user)
+		.then(function(data) {
+			var user = _.pick(data, 'name', 'surname', 'email', 'storeId', 'cart');
+
+			return res.send(user);
+		})
+		.catch(function(err){
+			return res.status(400).send({error: err.message})
+		});
+
+	})
+
 	app.all('*', function(req, res, next) {
 		// Just send the index.html for other files to support HTML5Mode
 		res.sendFile('index.html', { root:  __dirname + '/../public' });
