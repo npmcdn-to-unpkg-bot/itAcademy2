@@ -23,7 +23,7 @@ storeAppControllers.controller('StoreCtrl', ['$cookies', '$scope', '$http', func
 
 }]);
 
-storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', '$state',  function($cookies, $scope, $http, $stateParams) {
+storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', '$state',  function($cookies, $scope, $http, $stateParams, $state) {
   $scope.products = [];
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
@@ -44,6 +44,10 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 	}
 
   visitStore();
+
+  $scope.showAll = function() {
+    $state.go('store', {id: $scope.store._id}, {reload: true});
+  }
 
   $scope.logout = function () {
     $cookies.remove('user');

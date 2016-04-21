@@ -30,6 +30,9 @@
             <ul>
               <li ng-repeat="category in categories"><a ng-click="filterByCategory(category)">{{category}}</a></li>
             </ul>
+            <ul>
+              <li><a ng-click="showAll()">Show all</a></li>
+            </ul>
           </div>
 
           <div ui-view>

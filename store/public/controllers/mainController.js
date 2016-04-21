@@ -17,8 +17,12 @@ filterControllers.controller('CategoriesCtrl', ['$cookies', '$scope', '$http', '
 		}, function(err){
       console.log(err);
 		});
+  };
 
-  }
+  $scope.showAll = function() {
+    $state.go('store', {id: $scope.store._id}, {reload: true});
+  };
+
 }]);
 
 (function() {

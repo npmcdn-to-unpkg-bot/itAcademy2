@@ -1,3 +1,13 @@
+<div class="collection col s9">
+  <a ng-click="showAll()">
+    <div class="chip">
+      {{products[0].category}}
+      <i class="material-icons">close</i>
+    </div>
+  </a>
+</div>
+
+</div>
 <div class="products col s9">
   <div class="product" ng-repeat="product in products">
     <div class="product-top">
@@ -5,7 +15,7 @@
         <img ng-src="{{product.image}}" alt="" />
       </a>
     </div>
-    
+
     <div class="product-bottom">
       <h5>
         <a href="#">
