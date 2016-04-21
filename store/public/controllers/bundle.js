@@ -1,9 +1,43 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var storeAppControllers = require('./storeAppControllers');
 
+var filterControllers = angular.module('filterControllers', []);
+
+filterControllers.controller('CategoriesCtrl', ['$cookies', '$scope', '$http', '$state', 'dataTransfer', function($cookies, $scope, $http, $state, dataTransfer) {
+  $scope.products = dataTransfer.getProducts();
+
+  $scope.filterByCategory = function (category) {
+    var url = 'api/store/'.concat($scope.store._id, '/', category);
+
+    $http.get(url)
+		.then(function(res){
+      dataTransfer.setProducts(res.data);
+
+      $state.go('store.category', {category: category});
+
+		}, function(err){
+      console.log(err);
+		});
+
+  }
+}]);
+
 (function() {
     angular
-        .module('storeApp', ['storeAppControllers', 'underscore', 'ui.router', 'ngCookies'])
+        .module('storeApp', ['storeAppControllers', 'filterControllers', 'underscore', 'ui.router', 'ngCookies'])
+        .factory('dataTransfer', function($http) {
+          var products = [];
+
+          return {
+            setProducts: function (data) {
+              products = data;
+            },
+            getProducts: function () {
+              return products;
+            }
+          };
+
+        })
         .filter('unique', function() {
           return function(collection, keyname) {
             var output = [],
@@ -34,6 +68,11 @@ var storeAppControllers = require('./storeAppControllers');
             url: '/store/:id',
             templateUrl: 'partials/storeFront.html',
             controller: 'StoreFrontCtrl'
+          }).
+          state('store.category', {
+            url: '/:category',
+            templateUrl: 'partials/category.html',
+            controller: 'CategoriesCtrl'
           }).
           state('store.register', {
             url: '/register',
@@ -77,7 +116,7 @@ storeAppControllers.controller('StoreCtrl', ['$cookies', '$scope', '$http', func
 
 }]);
 
-storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', '$state',  function($cookies, $scope, $http, $stateParams, $state) {
+storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','$stateParams', '$state',  function($cookies, $scope, $http, $stateParams) {
   $scope.products = [];
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
@@ -89,7 +128,9 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 			if (res.data.error)
 				return console.log(res.data.error);
 
-			$scope.products = res.data;
+      console.log(res.data[0]);
+			$scope.products = res.data[0];
+      $scope.categories = res.data[1];
 		}, function(err){
 			console.log(err);
 		});
@@ -101,7 +142,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $cookies.remove('user');
     delete $scope.user;
 
-    $state.go('store', {id: $scope.store._id});
+    $state.go('store', {id: $scope.store._id}, {reload: true});
   }
 
 }]);
@@ -115,7 +156,7 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
 		.then(function(res){
       var user = res.data;
       $cookies.putObject('user', user);
-      $state.go('store', {id: $scope.store._id});
+      $state.go('store', {id: $scope.store._id}, {reload: true});
 
 		}, function(err){
       if (err.data.error.indexOf('E11000') !== -1) {

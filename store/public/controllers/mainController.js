@@ -1,8 +1,42 @@
 var storeAppControllers = require('./storeAppControllers');
 
+var filterControllers = angular.module('filterControllers', []);
+
+filterControllers.controller('CategoriesCtrl', ['$cookies', '$scope', '$http', '$state', 'dataTransfer', function($cookies, $scope, $http, $state, dataTransfer) {
+  $scope.products = dataTransfer.getProducts();
+
+  $scope.filterByCategory = function (category) {
+    var url = 'api/store/'.concat($scope.store._id, '/', category);
+
+    $http.get(url)
+		.then(function(res){
+      dataTransfer.setProducts(res.data);
+
+      $state.go('store.category', {category: category});
+
+		}, function(err){
+      console.log(err);
+		});
+
+  }
+}]);
+
 (function() {
     angular
-        .module('storeApp', ['storeAppControllers', 'underscore', 'ui.router', 'ngCookies'])
+        .module('storeApp', ['storeAppControllers', 'filterControllers', 'underscore', 'ui.router', 'ngCookies'])
+        .factory('dataTransfer', function($http) {
+          var products = [];
+
+          return {
+            setProducts: function (data) {
+              products = data;
+            },
+            getProducts: function () {
+              return products;
+            }
+          };
+
+        })
         .filter('unique', function() {
           return function(collection, keyname) {
             var output = [],
@@ -33,6 +67,11 @@ var storeAppControllers = require('./storeAppControllers');
             url: '/store/:id',
             templateUrl: 'partials/storeFront.html',
             controller: 'StoreFrontCtrl'
+          }).
+          state('store.category', {
+            url: '/:category',
+            templateUrl: 'partials/category.html',
+            controller: 'CategoriesCtrl'
           }).
           state('store.register', {
             url: '/register',

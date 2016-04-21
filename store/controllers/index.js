@@ -38,17 +38,26 @@ module.exports.set = function(app) {
 		})
 		.then(function(items) {
 			var result = _.map(storeItems, function(storeItem) {
-			   	var item =  _.find(items, function(item) {
-			     	return storeItem.itemId.toString() === item._id.toString()
-			   	});
-			  	return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
+				var item =  _.find(items, function(item) {
+					return storeItem.itemId.toString() === item._id.toString()
+				});
+				return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
 			});
 
-			return res.send(result);
+			var categories = _.map(result, function(item) {
+				return item.category
+			})
+
+			var storeData = [];
+			storeData[0] = result;
+			storeData[1] = _.uniq(categories);
+
+			return res.send(storeData);
 		})
 		.catch(function(err){
 			return console.log(err);
 		});
+
 	});
 
 	app.post('/api/add_user', function (req, res) {
@@ -91,6 +100,39 @@ module.exports.set = function(app) {
 		});
 
 	})
+
+	app.get('/api/store/:id/:category', function (req, res) {
+		console.log(req.params.id, req.params.category);
+
+		var storeId = req.params.id;
+		var storeItems = [];
+
+		ItemSet.find({storeId: storeId}).lean()
+		.then(function(data) {
+			storeItems = data;
+			var storeItemsIds = _.map(storeItems, function(storeItem) {
+				return storeItem.itemId
+			});
+			return Item.find({'_id': {$in: storeItemsIds}, 'category': req.params.category}).lean();
+		})
+		.then(function(items) {
+			var result = _.map(items, function(item) {
+				var storeItem =  _.find(storeItems, function(storeItem) {
+					return storeItem.itemId.toString() === item._id.toString()
+				});
+
+				return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
+			});
+
+			console.log(result);
+
+			return res.send(result);
+		})
+		.catch(function(err){
+			return console.log(err);
+		});
+
+	});
 
 	app.all('*', function(req, res, next) {
 		// Just send the index.html for other files to support HTML5Mode

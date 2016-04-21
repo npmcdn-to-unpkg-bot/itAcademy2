@@ -28,8 +28,6 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
 
-  console.log($scope.user);
-
 	var visitStore = function(){
 
     $http.get('api/store/' + $stateParams.id)
@@ -37,7 +35,9 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 			if (res.data.error)
 				return console.log(res.data.error);
 
-			$scope.products = res.data;
+      console.log(res.data[0]);
+			$scope.products = res.data[0];
+      $scope.categories = res.data[1];
 		}, function(err){
 			console.log(err);
 		});
@@ -49,7 +49,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $cookies.remove('user');
     delete $scope.user;
 
-    $state.go('store', {id: $scope.store._id});
+    $state.go('store', {id: $scope.store._id}, {reload: true});
   }
 
 }]);
@@ -63,7 +63,7 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
 		.then(function(res){
       var user = res.data;
       $cookies.putObject('user', user);
-      $state.go('store', {id: $scope.store._id});
+      $state.go('store', {id: $scope.store._id}, {reload: true});
 
 		}, function(err){
       if (err.data.error.indexOf('E11000') !== -1) {
