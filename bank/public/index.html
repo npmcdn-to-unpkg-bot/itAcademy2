@@ -42,13 +42,31 @@
                     <div class="form-group">
 
                         <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.login">
-                        <input type="text" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
+                        <input type="password" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg" ng-click="createAccount()">Register</button>
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="getMoney()">Get Money</button>
                 </form>
             </div>
         </div>
+
+        <div class="container">
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+                <form>
+                    <div class="form-group">
+
+                        <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.source">
+                        <input type="password" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
+                        <input type="text" class="form-control input-lg text-center" placeholder="Type your destination here" ng-model="formData.destination">
+                        <input type="text" class="form-control input-lg text-center" placeholder="Enter your amount here" ng-model="formData.amount">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="transfer()">Make transfer</button>
+                </form>
+            </div>
+        </div>
+
 
     </div>
 </body>

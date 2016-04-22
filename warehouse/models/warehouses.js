@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var warehousesSchema = new Schema({
-   nameWarehouse: String,
+    nameWarehouse: String,
     date: {
         type: Date,
         default: Date.now
