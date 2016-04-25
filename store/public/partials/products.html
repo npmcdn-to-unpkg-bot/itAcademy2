@@ -1,6 +1,12 @@
-
-
+<div class="collection col s9" ng-show="filter">
+  <a ng-click="showAll()">
+    <div class="chip">
+      {{products[0].category}}
+      <i class="material-icons">close</i>
+    </div>
+  </a>
 </div>
+
 <div class="products col s9">
   <div class="product" ng-repeat="product in products">
     <div class="product-top">

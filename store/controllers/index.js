@@ -24,39 +24,69 @@ module.exports.set = function(app) {
 	});
 
 	// created itemsToSend in order to form and populate array of products for the store
-	app.get('/api/store/:id', function (req, res) {
+	app.get('/api/store/:id*', function (req, res) {
 		var storeId = req.params.id;
+		var category = req.query.category;
 		var storeItems = [];
 
-		ItemSet.find({storeId: storeId}).lean()
-		.then(function(data) {
-			storeItems = data;
-			var storeItemsIds = _.map(storeItems, function(storeItem) {
-				return storeItem.itemId
-			});
-			return Item.find({'_id': {$in: storeItemsIds}}).lean();
-		})
-		.then(function(items) {
-			var result = _.map(storeItems, function(storeItem) {
-				var item =  _.find(items, function(item) {
-					return storeItem.itemId.toString() === item._id.toString()
+		console.log(storeId);
+
+		if (!category) {
+			ItemSet.find({storeId: storeId}).lean()
+			.then(function(data) {
+				storeItems = data;
+				var storeItemsIds = _.map(storeItems, function(storeItem) {
+					return storeItem.itemId
 				});
-				return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
-			});
-
-			var categories = _.map(result, function(item) {
-				return item.category
+				return Item.find({'_id': {$in: storeItemsIds}}).lean();
 			})
+			.then(function(items) {
+				var result = _.map(storeItems, function(storeItem) {
+					var item =  _.find(items, function(item) {
+						return storeItem.itemId.toString() === item._id.toString()
+					});
+					return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
+				});
 
-			var storeData = [];
-			storeData[0] = result;
-			storeData[1] = _.uniq(categories);
+				var categories = _.map(result, function(item) {
+					return item.category
+				})
 
-			return res.send(storeData);
-		})
-		.catch(function(err){
-			return console.log(err);
-		});
+				// sending categories to preserve them in the future
+				var storeData = [];
+				storeData[0] = result;
+				storeData[1] = _.uniq(categories);
+
+				return res.send(storeData);
+			})
+			.catch(function(err){
+				return console.log(err);
+			});
+		} else {
+			ItemSet.find({storeId: storeId}).lean()
+			.then(function(data) {
+				storeItems = data;
+				var storeItemsIds = _.map(storeItems, function(storeItem) {
+					return storeItem.itemId
+				});
+
+				return Item.find({'_id': {$in: storeItemsIds}, 'category': category}).lean();
+			})
+			.then(function(items) {				
+				var result = _.map(items, function(item) {
+					var storeItem =  _.find(storeItems, function(storeItem) {
+						return storeItem.itemId.toString() === item._id.toString()
+					});
+
+					return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
+				});
+
+				return res.send(result);
+			})
+			.catch(function(err){
+				return console.log(err);
+			});
+		}
 
 	});
 
@@ -80,7 +110,7 @@ module.exports.set = function(app) {
 			return res.status(400).send({error: err.message})
 		});
 
-	})
+	});
 
 	app.post('/api/login_user', function (req, res) {
 		var user = {
@@ -97,39 +127,6 @@ module.exports.set = function(app) {
 		})
 		.catch(function(err){
 			return res.status(400).send({error: err.message})
-		});
-
-	})
-
-	app.get('/api/store/:id/:category', function (req, res) {
-		console.log(req.params.id, req.params.category);
-
-		var storeId = req.params.id;
-		var storeItems = [];
-
-		ItemSet.find({storeId: storeId}).lean()
-		.then(function(data) {
-			storeItems = data;
-			var storeItemsIds = _.map(storeItems, function(storeItem) {
-				return storeItem.itemId
-			});
-			return Item.find({'_id': {$in: storeItemsIds}, 'category': req.params.category}).lean();
-		})
-		.then(function(items) {
-			var result = _.map(items, function(item) {
-				var storeItem =  _.find(storeItems, function(storeItem) {
-					return storeItem.itemId.toString() === item._id.toString()
-				});
-
-				return _.extend({}, storeItem, _.pick(item, 'title', 'description', 'image', 'category'));
-			});
-
-			console.log(result);
-
-			return res.send(result);
-		})
-		.catch(function(err){
-			return console.log(err);
 		});
 
 	});

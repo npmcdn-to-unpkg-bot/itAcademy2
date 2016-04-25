@@ -1,35 +1,12 @@
 var storeAppControllers = require('./storeAppControllers');
 
-var filterControllers = angular.module('filterControllers', []);
-
-filterControllers.controller('CategoriesCtrl', ['$cookies', '$scope', '$http', '$state', 'dataTransfer', function($cookies, $scope, $http, $state, dataTransfer) {
-  $scope.products = dataTransfer.getProducts();
-
-  $scope.filterByCategory = function (category) {
-    var url = 'api/store/'.concat($scope.store._id, '/', category);
-
-    $http.get(url)
-		.then(function(res){
-      dataTransfer.setProducts(res.data);
-
-      $state.go('store.category', {category: category});
-
-		}, function(err){
-      console.log(err);
-		});
-  };
-
-  $scope.showAll = function() {
-    $state.go('store', {id: $scope.store._id}, {reload: true});
-  };
-
-}]);
-
 (function() {
     angular
-        .module('storeApp', ['storeAppControllers', 'filterControllers', 'underscore', 'ui.router', 'ngCookies'])
-        .factory('dataTransfer', function($http) {
+        .module('storeApp', ['storeAppControllers', 'underscore', 'ui.router', 'ngCookies'])
+        .factory('dataTransfer', function() {
           var products = [];
+          var categories = [];
+          var filter;
 
           return {
             setProducts: function (data) {
@@ -37,6 +14,18 @@ filterControllers.controller('CategoriesCtrl', ['$cookies', '$scope', '$http', '
             },
             getProducts: function () {
               return products;
+            },
+            setCategories: function (data) {
+              categories = data;
+            },
+            getCategories: function () {
+              return categories;
+            },
+            setFilter: function (data) {
+              filter = data;
+            },
+            getFilter: function () {
+              return filter;
             }
           };
 
@@ -64,28 +53,47 @@ filterControllers.controller('CategoriesCtrl', ['$cookies', '$scope', '$http', '
           $stateProvider.
           state('list', {
             url: '/',
-            templateUrl: 'partials/storesList.html',
-            controller: 'StoreCtrl'
+            views: {
+              'content': {
+                templateUrl: 'partials/storesList.html',
+                controller: 'StoreCtrl'
+              }
+            }
           }).
           state('store', {
             url: '/store/:id',
-            templateUrl: 'partials/storeFront.html',
-            controller: 'StoreFrontCtrl'
-          }).
-          state('store.category', {
-            url: '/:category',
-            templateUrl: 'partials/category.html',
-            controller: 'CategoriesCtrl'
+            views: {
+              'content': {
+                templateUrl: 'partials/storeFront.html',
+                controller: 'StorePageCtrl'
+              },
+              'categories@store': {
+                templateUrl: 'partials/categoriesList.html',
+                controller: 'CategoriesCtrl'
+              },
+              'products@store': {
+                templateUrl: 'partials/products.html',
+                controller: 'ProductsCtrl'
+              }
+            }
           }).
           state('store.register', {
             url: '/register',
-            templateUrl: 'partials/register.html',
-            controller: 'RegisterCtrl'
+            views: {
+              'storeFront': {
+                templateUrl: 'partials/register.html',
+                controller: 'RegisterCtrl'
+              }
+            }
           }).
           state('store.login', {
             url: '/login',
-            templateUrl: 'partials/login.html',
-            controller: 'LoginCtrl'
+            views: {
+              'storeFront': {
+                templateUrl: 'partials/login.html',
+                controller: 'RegisterCtrl'
+              }
+            }
           });
 
           $locationProvider.html5Mode(true);
