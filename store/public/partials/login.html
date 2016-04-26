@@ -1,23 +1,19 @@
-<div class="row">
-  <h2>Login Form</h2>
-  <form class="col s12" name="loginUserForm" ng-submit="loginUserForm.$valid && loginUser(formData)" novalidate>
-    <div class="row">
-      <div class="input-field col s12">
-        <input id="email" type="email" class="validate" ng-model="formData.email" required>
-        <label for="email">Email</label>
+    <h2>Login Form</h2>
+    <form class="col s12" name="loginUserForm" ng-submit="loginUser(formData)" novalidate>
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="email" type="email" class="validate" ng-model="formData.email" required>
+          <label for="email">Email</label>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="input-field col s12">
-        <input id="password" type="password" class="validate" ng-model="formData.password" required>
-        <label for="password">Password</label>
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="password" type="password" class="validate" ng-model="formData.password" required>
+          <label for="password">Password</label>
+        </div>
       </div>
-    </div>
-    <button type="submit" name="action" ng-class="{'btn disabled': loginUserForm.$invalid, 'btn waves-effect waves-light': loginUserForm.$valid }">Log in
-      <i class="material-icons right">send</i>
-    </button>
-    <a ui-sref="store.register" class="register">Register</a>
-  </form>
-
-</form>
-</div>
+      <button type="submit" name="action" ng-class="{'btn disabled': loginUserForm.$invalid, 'btn waves-effect waves-light': loginUserForm.$valid }">Log in
+        <i class="material-icons right">send</i>
+      </button>
+      <a ui-sref="store.register" class="register">Register</a>
+    </form>

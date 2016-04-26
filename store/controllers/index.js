@@ -29,8 +29,6 @@ module.exports.set = function(app) {
 		var category = req.query.category;
 		var storeItems = [];
 
-		console.log(storeId);
-
 		if (!category) {
 			ItemSet.find({storeId: storeId}).lean()
 			.then(function(data) {
@@ -72,7 +70,7 @@ module.exports.set = function(app) {
 
 				return Item.find({'_id': {$in: storeItemsIds}, 'category': category}).lean();
 			})
-			.then(function(items) {				
+			.then(function(items) {
 				var result = _.map(items, function(item) {
 					var storeItem =  _.find(storeItems, function(storeItem) {
 						return storeItem.itemId.toString() === item._id.toString()
@@ -118,6 +116,8 @@ module.exports.set = function(app) {
 			email: req.body.email,
 			password: req.body.password
 		};
+
+		//console.log(user);
 
 		User.findOne(user)
 		.then(function(data) {

@@ -1,33 +1,32 @@
-<div class="row">
-  <h2>Please fill in the form:</h2>
-    <form class="col s12" name="addUserForm" ng-submit="addUserForm.$valid && addUser(formData)" novalidate>
-      <div class="row">
-        <div class="input-field col s6" >
-          <input id="first_name" type="text" class="validate" ng-model="formData.name" required>
-          <label for="first_name">First Name</label>
-        </div>
-        <div class="input-field col s6">
-          <input id="last_name" type="text" class="validate" ng-model="formData.surname" required>
-          <label for="last_name">Last Name</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s12">
-          <input id="email" type="email" class="validate" ng-model="formData.email" required>
-          <label for="email">Email</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s12">
-          <input id="password" type="password" class="validate" ng-model="formData.password" required>
-          <label for="password">Password</label>
-        </div>
-      </div>
-      <button type="submit" name="action" ng-class="{'btn disabled': addUserForm.$invalid, 'btn waves-effect waves-light': addUserForm.$valid }">Submit
-        <i class="material-icons right">send</i>
-      </button>
-      <div ng-show="error" class="error">
-        <span>{{error}}</span><a ui-sref="store.login">Log in</a>
-      </div>
-    </form>
+
+<h2>Please fill in the form:</h2>
+<form class="col s12" name="addUserForm" ng-submit="addUserForm.$valid && addUser(formData)" novalidate>
+  <div class="row">
+    <div class="input-field col s6" >
+      <input id="first_name" type="text" class="validate" ng-model="formData.name" required>
+      <label for="first_name">First Name</label>
+    </div>
+    <div class="input-field col s6">
+      <input id="last_name" type="text" class="validate" ng-model="formData.surname" required>
+      <label for="last_name">Last Name</label>
+    </div>
   </div>
+  <div class="row">
+    <div class="input-field col s12">
+      <input id="email" type="email" class="validate" ng-model="formData.email" required>
+      <label for="email">Email</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field col s12">
+      <input id="password" type="password" class="validate" ng-model="formData.password" required>
+      <label for="password">Password</label>
+    </div>
+  </div>
+  <button type="submit" name="action" ng-class="{'btn disabled': addUserForm.$invalid, 'btn waves-effect waves-light': addUserForm.$valid }">Submit
+    <i class="material-icons right">send</i>
+  </button>
+  <div ng-show="error" class="error">
+    <span>{{error}}</span><a ui-sref="store.login">Log in</a>
+  </div>
+</form>
