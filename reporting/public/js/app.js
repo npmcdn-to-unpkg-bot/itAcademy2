@@ -1,4 +1,4 @@
-var app = angular.module('reports', ['ngRoute', 'smart-table']);
+var app = angular.module('reports', ['ngRoute', 'smart-table','ngTable']);
 
 app.config(function($routeProvider, $locationProvider) {
     $routeProvider
@@ -20,7 +20,7 @@ app.config(function($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
 })
 
-app.controller('BankController', ['$scope', "$http", function($scope, $http) {
+app.controller('BankController', ['$scope', "$http",'$filter','ngTableParams', function($scope, $http,$filter,ngTableParams) {
     $scope.templates = [{
         name: 'report 1',
         url: 'views/reports/bank/report1.html'
@@ -38,10 +38,29 @@ app.controller('BankController', ['$scope', "$http", function($scope, $http) {
         .error(function(data) {
             console.log('Error: ' + data);
         });
-
+        $http.get('/bank/report2')
+            .success(function(data) {
+                //$scope.warehouseReport1Data = data;
+                console.log(data);
+                $scope.bankReport2Table = new ngTableParams({
+                            page: 1,
+                            count: 10
+                        }, {
+                            total: data.length,
+                            getData: function ($defer, params) {
+                                $scope.data = params.sorting() ? $filter('orderBy')(data, params.orderBy()) : data;
+                                $scope.data = params.filter() ? $filter('filter')($scope.data, params.filter()) : $scope.data;
+                                $scope.data = $scope.data.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                                $defer.resolve($scope.data);
+                            }
+                        });
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
 }]);
 
-app.controller('WarehouseController', ['$scope','$http', function($scope, $http) {
+app.controller('WarehouseController', ['$scope','$http','$filter','ngTableParams', function($scope, $http,$filter,ngTableParams) {
     $scope.templates = [{
         name: 'report 1',
         url: 'views/reports/warehouse/report1.html'
@@ -53,8 +72,20 @@ app.controller('WarehouseController', ['$scope','$http', function($scope, $http)
 
     $http.get('/warehouse/report1')
         .success(function(data) {
-            $scope.warehouseReport1Data = data;
+            //$scope.warehouseReport1Data = data;
             console.log(data);
+            $scope.warehouseReport1Table = new ngTableParams({
+                        page: 1,
+                        count: 10
+                    }, {
+                        total: data.length,
+                        getData: function ($defer, params) {
+                            $scope.data = params.sorting() ? $filter('orderBy')(data, params.orderBy()) : data;
+                            $scope.data = params.filter() ? $filter('filter')($scope.data, params.filter()) : $scope.data;
+                            $scope.data = $scope.data.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                            $defer.resolve($scope.data);
+                        }
+                    });
         })
         .error(function(data) {
             console.log('Error: ' + data);
@@ -62,7 +93,7 @@ app.controller('WarehouseController', ['$scope','$http', function($scope, $http)
 
 }]);
 
-app.controller('ShopController', ['$scope','$http', function($scope,$http) {
+app.controller('ShopController', ['$scope','$http','$filter','ngTableParams', function($scope,$http,$filter,ngTableParams) {
     $scope.templates = [{
         name: 'report 1',
         url: 'views/reports/shop/report1.html'
@@ -92,12 +123,25 @@ app.controller('ShopController', ['$scope','$http', function($scope,$http) {
     // }];
     $http.get('/shop/report1')
         .success(function(data) {
-            $scope.shopReport1Data = data;
+            //$scope.shopReport1Data = data;
             console.log(data);
+            $scope.shopReport1Table = new ngTableParams({
+                        page: 1,
+                        count: 10
+                    }, {
+                        total: data.length,
+                        getData: function ($defer, params) {
+                            $scope.data = params.sorting() ? $filter('orderBy')(data, params.orderBy()) : data;
+                            $scope.data = params.filter() ? $filter('filter')($scope.data, params.filter()) : $scope.data;
+                            $scope.data = $scope.data.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                            $defer.resolve($scope.data);
+                        }
+                    });
         })
         .error(function(data) {
             console.log('Error: ' + data);
         });
+
 }]);
 
 

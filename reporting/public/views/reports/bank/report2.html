@@ -1,3 +1,16 @@
 <div class="container">
     <h3>bank report 2</h3>
+    <table ng-table="bankReport2Table" show-filter="true" class="table table-striped">
+       <tr ng-repeat="row in data">
+           <td data-title="'Account'" sortable="'source'" filter="{ 'source': 'text' }">
+               {{row.source}}
+           </td>
+           <td data-title="'time'" sortable="'time'" filter="{ 'time': 'text' }">
+               {{row.time}}
+           </td>
+           <td data-title="'amount'" sortable="'amount'" filter="{ 'amount': 'text' }">
+               {{row.amount}}
+           </td>
+       </tr>
+    </table>
 </div>

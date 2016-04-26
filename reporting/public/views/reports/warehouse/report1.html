@@ -1,5 +1,6 @@
 <div class="container">
     <h4>warehouse report 1 template</h4>
+<!--
     <style>
       .st-sort-ascent:before{
         content: '\25B2';
@@ -32,4 +33,21 @@
     	</tr>
     	</tbody>
     </table>
+-->
+<table ng-table="warehouseReport1Table" show-filter="true" class="table table-striped">
+   <tr ng-repeat="row in data">
+       <td data-title="'warehouseTitle'" sortable="'warehouseTitle'" filter="{ 'warehouseTitle': 'text' }">
+           {{row.warehouseTitle}}
+       </td>
+       <td data-title="'itemTitle'" sortable="'itemTitle'" filter="{ 'itemTitle': 'text' }">
+           {{row.itemTitle}}
+       </td>
+       <td data-title="'amount'" sortable="'amount'" filter="{ 'amount': 'text' }">
+           {{row.amount}}
+       </td>
+       <td data-title="'price'" sortable="'price'" filter="{ 'price': 'text' }">
+           {{row.price}}
+       </td>
+   </tr>
+</table>
 </div>
