@@ -1,0 +1,41 @@
+<div class="categories col s3">
+  <h3>Categories</h3>
+  <ul>
+    <li ng-repeat="category in categories"><a ng-click="filterByCategory(category)">{{category}}</a></li>
+  </ul>
+  <ul>
+    <li><a ng-click="showAll()">Show all</a></li>
+  </ul>
+</div>
+
+<div class="item-page col s9">
+  <div class="row">
+    <div class="item-image col s4">
+      <img ng-src="{{item.image}}" alt="" />
+    </div>
+
+    <div class="item-info col s8">
+      <h4>{{item.title}}</h4>
+      <div class="item-buy">
+        <span >
+          {{item.price | currency}}
+        </span>
+        <a class="waves-effect waves-light btn modal-trigger" ng-class="{'btn disabled': !user}">Add to Cart</a>
+      </div>
+      <div class="">
+        <p>
+          {{item.count}} items available
+        </p>
+      </div>
+      <div class="">
+        <p>
+          {{item.description}}
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+
+</div>

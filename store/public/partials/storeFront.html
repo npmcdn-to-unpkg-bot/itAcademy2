@@ -10,14 +10,14 @@
           <li><a ui-sref="store.login" ng-hide="user">Log in</a></li>
           <li ng-show="user"><a ng-click="logout()">Log out</a></li>
           <li><a ui-sref="store.register" ng-hide="user">Register</a></li>
-          <li><a href="#">Cart</a></li>
+          <li><a ui-sref="store.cart">Cart</a></li>
         </ul>
         <ul class="side-nav" id="mobile-demo">
           <li ng-show="user">{{user.name}}</li>
           <li><a ui-sref="store.login" ng-hide="user">Log in</a></li>
           <li ng-show="user"><a ng-click="logout()">Log out</a></li>
           <li><a ui-sref="store.register" ng-hide="user">Register</a></li>
-          <li><a href="#">Cart</a></li>
+          <li><a ui-sref="store.cart">Cart</a></li>
         </ul>
       </div>
     </nav>
@@ -36,6 +36,7 @@
             </ul>
           </div>
 
+          <!-- put outer div to group products and filter -->
           <div>
             <div class="collection col s9" ng-show="filter">
               <a ng-click="showAll()">
@@ -49,21 +50,21 @@
             <div class="products col s9">
               <div class="product" ng-repeat="product in products">
                 <div class="product-top">
-                  <a href="#">
+                  <a ui-sref="store.item({item_title: product.title})" ng-click="saveItem(product)">
                     <img ng-src="{{product.image}}" alt="" />
                   </a>
                 </div>
 
                 <div class="product-bottom">
                   <h5>
-                    <a href="#">
+                    <a ui-sref="store.item({item_title: product.title})" ng-click="saveItem(product)">
                       {{product.title}}
                     </a>
                   </h5>
 
                   <div class="product-price">
                     <h6>{{product.price | currency}}</h6>
-                    <a class="waves-effect waves-light btn">Add to Cart</a>
+                    <a class="waves-effect waves-light btn modal-trigger" ng-class="{'btn disabled': !user}" ng-click="addToCart(product)">Add to Cart</a>
                   </div>
 
                 </div>

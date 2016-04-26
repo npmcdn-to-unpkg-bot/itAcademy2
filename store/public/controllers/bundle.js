@@ -7,7 +7,9 @@ var storeAppControllers = require('./storeAppControllers');
         .factory('dataTransfer', function() {
           var products = [];
           var categories = [];
+          var cart = [];
           var filter;
+          var item;
 
           return {
             setProducts: function (data) {
@@ -27,6 +29,18 @@ var storeAppControllers = require('./storeAppControllers');
             },
             getFilter: function () {
               return filter;
+            },
+            setItem: function (data) {
+              item = data;
+            },
+            getItem: function () {
+              return item;
+            },
+            addToCart: function (data) {
+              cart.push(data);
+            },
+            getCart: function () {
+              return cart;
             }
           };
 
@@ -56,6 +70,16 @@ var storeAppControllers = require('./storeAppControllers');
             url: '/login',
             templateUrl: 'partials/login.html',
             controller: 'LoginCtrl'
+          }).
+          state('store.cart', {
+            url: '/cart',
+            templateUrl: 'partials/cart.html',
+            controller: 'CartCtrl'
+          }).
+          state('store.item', {
+            url: '/{item_title}',
+            templateUrl: 'partials/itemPage.html',
+            controller: 'ItemCtrl'
           });
 
           $locationProvider.html5Mode(true);
@@ -100,6 +124,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $state.go('store', {id: $scope.store._id}, {reload: true});
   };
 
+  // Start of Filtering section
   $scope.filterByCategory = function (category) {
     var url = 'api/store/'+ $scope.store._id + '?category=' + category;
 
@@ -120,8 +145,10 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     dataTransfer.setFilter('');
     $state.go('store', {id: $scope.store._id}, {reload: true});
   };
+  // End of filtering section
 
-  var getProductsAndCategories = function(){
+  // START of populate data for the main page
+  var getProducts = function(){
 
     $http.get('api/store/' + $scope.store._id)
     .then(function(res){
@@ -136,9 +163,35 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     });
   }
 
+  var getCategories = function(){
+
+    $http.get('api/store/' + $scope.store._id)
+    .then(function(res){
+      if (res.data.error)
+        return console.log(res.data.error);
+
+      $scope.categories = res.data[1];
+      dataTransfer.setCategories(res.data[1]);
+    }, function(err){
+      console.log(err);
+    });
+  }
+  // END of populates data for the main page
+
+  $scope.saveItem = function(item) {
+    $cookies.putObject('item', item);
+    dataTransfer.setItem(item);
+  };
+
+  $scope.addToCart = function(item) {
+    dataTransfer.addToCart(item);
+    $scope.user.cart.push(item);
+    $cookies.putObject('user', $scope.user);
+  }
+
   dataTransfer.getFilter() ? $scope.filter = dataTransfer.getFilter() : '';
-  dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getProductsAndCategories();
-  dataTransfer.getProducts().length > 0 ? $scope.products = dataTransfer.getProducts() : getProductsAndCategories();
+  dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
+  dataTransfer.getProducts().length > 0 ? $scope.products = dataTransfer.getProducts() : getProducts();
 }]);
 
 storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '$state', function($scope, $http, $cookies, $state){
@@ -179,6 +232,34 @@ storeAppControllers.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$st
   }
 }]);
 
+storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
+  $scope.store = $cookies.getObject('store');
+  $scope.item =  dataTransfer.getItem() || $cookies.getObject('item');
+
+  var getCategories = function(){
+
+    $http.get('api/store/' + $scope.store._id)
+    .then(function(res){
+      if (res.data.error)
+        return console.log(res.data.error);
+
+      $scope.categories = res.data[1];
+      dataTransfer.setCategories(res.data[1]);
+    }, function(err){
+      console.log(err);
+    });
+  }
+
+  dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
+}]);
+
+storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
+  $scope.store = $cookies.getObject('store');
+  $scope.user = $cookies.getObject('user');
+
+  _.isEmpty(dataTransfer.getCart()) ? $scope.items = $scope.user.cart : $scope.items = dataTransfer.getCart()
+
+}]);
 
 var underscore = angular.module('underscore', []);
 underscore.factory('_', ['$window', function($window) {

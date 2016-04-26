@@ -1,0 +1,16 @@
+<div class="cart">
+  <div class="cart-item col s12" ng-repeat="item in items">
+    <div class="cart-item-image col s3">
+      <img ng-src="{{item.image}}" alt="" />
+    </div>
+    <div class="cart-item-title col s6">
+      <h5>{{item.title}}</h5>
+    </div>
+    <div class="cart-item-price col s3">
+      <h6>{{item.price | currency }}</h6>
+    </div>
+
+  </div>
+  <a class="waves-effect waves-light btn">Buy</a>
+
+</div>

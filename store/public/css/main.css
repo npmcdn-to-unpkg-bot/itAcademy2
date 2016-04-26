@@ -21,3 +21,16 @@
 [ng-click] {
   cursor: pointer;
 }
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-buy > span {
+  float: left;
+}
+
+.item-buy > a {
+  float: right;
+}
