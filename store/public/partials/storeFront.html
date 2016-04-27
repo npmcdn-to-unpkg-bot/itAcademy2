@@ -64,7 +64,7 @@
 
                   <div class="product-price">
                     <h6>{{product.price | currency}}</h6>
-                    <a class="waves-effect waves-light btn modal-trigger" ng-class="{'btn disabled': !user}" ng-click="addToCart(product)">Add to Cart</a>
+                    <a class="waves-effect waves-light btn modal-trigger" ng-class="{'btn disabled': !user}" href="#modal1" ng-click="addToCart(product)">Add to Cart</a>
                   </div>
 
                 </div>
@@ -86,3 +86,21 @@
 
 
 </div>
+
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <h4>Please login or register to add items to cart</h4>
+  </div>
+  <div class="modal-footer">
+    <a class="waves-effect waves-light btn" ui-sref="store.login">Log in</a>
+    <a class="waves-effect waves-light btn" ui-sref="store.register">Register</a>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+    $('.modal-trigger').leanModal();
+  });
+</script>

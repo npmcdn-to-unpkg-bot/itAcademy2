@@ -118,10 +118,16 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.user = $cookies.getObject('user');
 
   $scope.logout = function () {
-    $cookies.remove('user');
-    delete $scope.user;
+    $http.get('/api/logout')
+    .then(function() {
+      $cookies.remove('user');
+      delete $scope.user;
+      $state.go('store', {id: $scope.store._id}, {reload: true});
+    }, function(err) {
+      console.log(err);
+      $scope.alert = 'Logout failed'
+    });
 
-    $state.go('store', {id: $scope.store._id}, {reload: true});
   };
 
   // Start of Filtering section
@@ -207,7 +213,9 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
 
 		}, function(err){
       if (err.data.error.indexOf('E11000') !== -1) {
-        $scope.error = "User with same email is already registered. Please "
+        $scope.error = "User with same email is already registered. Please ";
+      } else {
+        $scope.error = "Error occured, please try again later";
       }
 
 		});
@@ -222,12 +230,12 @@ storeAppControllers.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$st
     $http.post('api/login_user', formData)
 		.then(function(res){
       var user = res.data;
+      console.log(res);
       $cookies.putObject('user', user);
       $state.go('store', {id: $scope.store._id}, {reload: true});
 
 		}, function(err){
       console.log(err);
-
 		});
   }
 }]);

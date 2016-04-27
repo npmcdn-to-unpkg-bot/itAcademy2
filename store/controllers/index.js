@@ -9,9 +9,8 @@ var User = require('../models').User;
 var _ = require('underscore');
 var Promise = require('bluebird');
 
-var passport = require('../libs/passport');
-
 module.exports.set = function(app) {
+	require('./passport')(app);
 
 	app.get('/api/stores', function (req, res) {
 
@@ -88,6 +87,7 @@ module.exports.set = function(app) {
 
 	});
 
+/*
 	app.post('/api/add_user', function (req, res) {
 		var user = {
 			storeId: req.body.storeId,
@@ -130,6 +130,7 @@ module.exports.set = function(app) {
 		});
 
 	});
+	*/
 
 	app.all('*', function(req, res, next) {
 		// Just send the index.html for other files to support HTML5Mode
