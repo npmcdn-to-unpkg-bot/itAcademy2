@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Promise = require('bluebird');
 
 var Store = require('../models').Store;
 var ItemSet = require('../models').ItemSet;
@@ -9,106 +10,127 @@ var items = [
     title: 'Shoes "MoonWalk"',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/sh.jpg',
-    price: 115,
-    category: 'shoes',
-    originalPrice: 50,
-    count: 10
+    category: 'shoes'
   },
   {
     title: 'Chrome watch "Chuck"',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/wa.jpg',
-    price: '230',
-    category: 'clocks',
-    originalPrice: 150,
-    count: 20
+    category: 'clocks'
   },
   {
     title: 'Blue necklace',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/ch.jpg',
-    price: '55',
-    category: 'jewellery',
-    originalPrice: 20,
-    count: 15
+    category: 'jewellery'
   },
   {
     title: 'Black women\'s bag',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/ba.jpg',
-    price: '155',
-    category: 'apparel',
-    originalPrice: 50,
-    count: 10
+    category: 'apparel'
   },
   {
     title: 'Davidoff parfumes',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/bo.jpg',
-    price: '300',
-    category: 'parfumes',
-    originalPrice: 150,
-    count: 15
+    category: 'parfumes'
   },
   {
     title: 'Calvin Klein\'s parfumes',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/bott.jpg',
-    price: '165',
-    category: 'parfumes',
-    originalPrice: 50,
-    count: 25
+    category: 'parfumes'
   },
   {
     title: 'Wow\'s parfumes',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/bottle.jpg',
-    price: '400',
-    category: 'parfumes',
-    originalPrice: 50,
-    count: 15
+    category: 'parfumes'
   },
   {
     title: 'Brown women\'s bag',
     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
     image: 'images/baa.jpg',
-    price: '320',
-    category: 'apparel',
-    originalPrice: 150,
-    count: 20
+    category: 'apparel'
   }
 ]
 
-var storeIds = ['570e0cd574f0942419bf8ee6', '570e0cd574f0942419bf8ee4', '570e0cd574f0942419bf8ee5'];
+var stores = [
+  {
+    email: 'store1@gmail.com',
+    name: 'Cool Store',
+    password: 'store1',
+    account: 1234
+  },
+  {
+    email: 'store2@gmail.com',
+    name: 'Best Store',
+    password: 'store2',
+    account: 4321
+  },
+  {
+    email: 'store3@gmail.com',
+    name: 'Fancy Store',
+    password: 'store3',
+    account: 1254
+  }];
 
-_.each(storeIds, function(storeId) {
-  _.each(items, function(item) {
-    var itemToItems = _.pick(item, 'title', 'description', 'image', 'category');
-    var itemToItemSet = _.pick(item, 'originalPrice', 'count');
+var createdStores;
 
-    var options = {
-      upsert: true
-    };
+Store.insertMany(stores).
+then(function(stores) {
+  createdStores = stores;
 
-    Item.findOneAndUpdate(itemToItems, options, function(err, doc) {
-      if (err) {
-        console.log(err);
-      } else {
-        itemToItemSet.storeId = storeId;
-        itemToItemSet.itemId = doc._id;
-        itemToItemSet.price = itemToItemSet.originalPrice * 2;
+  return Item.insertMany(items)
+}).
+then(function(items) {
+  var itemsToItemSet = [];
 
-        ItemSet.create(itemToItemSet, function(err, doc) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(doc);
-          };
+  _.each(createdStores, function(store) {
+    _.each(items, function(item) {
+      var originalPrice = _.random(50, 400)
+      var price = originalPrice * 2;
+      var count = _.random(5, 20);
 
-        });
+      var itemToItemSet = {
+        storeId: store._id,
+        itemId: item._id,
+        originalPrice: originalPrice,
+        price: price,
+        count: count
       };
 
-    });
-  });
+      itemsToItemSet.push(itemToItemSet);
+    })
+  })
 
+  return ItemSet.insertMany(itemsToItemSet);
+}).
+catch(function(err) {
+  console.log(err);
+})
+
+
+
+
+
+    /* _.each(items, function(item) {
+      var itemToItems = _.pick(item, 'title', 'description', 'image', 'category');
+      var itemToItemSet = _.pick(item, 'originalPrice', 'count');
+
+      var options = {
+        upsert: true
+      };
+
+      Item.findOneAndUpdate(itemToItems, options)
+      .then(function(item) {
+
+      })
+    })
+  })
+  .catch(function(err) {
+    console.log(err);
+  })
 });
+*/
