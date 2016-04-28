@@ -38,3 +38,8 @@
 .user-data-table > tbody > tr > td:first-child {
   font-weight: bold;
 }
+
+.cart-table > tbody > tr:last-child > td {
+  background-color: #ffd1c1;
+  font-weight: 900;
+}

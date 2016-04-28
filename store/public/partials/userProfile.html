@@ -1,30 +1,41 @@
-<table class="user-data-table">
-  <thead>
-    <tr>
-      <th>Personal info</th>
-    </tr>
-  </thead>
+<div class="row">
+  <div class="col s12">
+    <ul class="tabs">
+      <li class="tab col s3"><a href="#">Personal Data</a></li>
+      <li class="tab col s3"><a href="#">Purchases</a></li>
+    </ul>
+  </div>
+</div>
 
-  <tbody>
-    <tr>
-      <td>Name</td>
-      <td>{{user.name}}</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Surname</td>
-      <td>{{user.surname}}</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Email</td>
-      <td>{{user.email}}</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Money Balance</td>
-      <td>{{user.amount || 0 | currency}}</td>
-      <td><a class="waves-effect waves-light btn" ng-click="getMoney()">Get Money!</a></td>
-    </tr>
-  </tbody>
-</table>
+<ui-view>
+  <table class="user-data-table">
+    <thead>
+      <tr>
+        <th>Personal info</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>Name</td>
+        <td>{{user.name}}</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Surname</td>
+        <td>{{user.surname}}</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{user.email}}</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Money Balance</td>
+        <td>{{user.amount || 0 | currency}}</td>
+        <td><a class="waves-effect waves-light btn" ng-click="getMoney()">Get Money!</a></td>
+      </tr>
+    </tbody>
+  </table>
+</ui-view>

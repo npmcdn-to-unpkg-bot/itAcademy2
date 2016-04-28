@@ -1,16 +1,39 @@
 <div class="cart">
-  <div class="cart-item col s12" ng-repeat="item in items">
-    <div class="cart-item-image col s3">
-      <img ng-src="{{item.image}}" alt="" />
-    </div>
-    <div class="cart-item-title col s6">
-      <h5>{{item.title}}</h5>
-    </div>
-    <div class="cart-item-price col s3">
-      <h6>{{item.price | currency }}</h6>
-    </div>
+  <table class="cart-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Item Image</th>
+        <th>Item Name</th>
+        <th>Item Price</th>
+        <th></th>
+      </tr>
+    </thead>
 
-  </div>
-  <a class="waves-effect waves-light btn">Buy</a>
+    <tbody>
+      <tr ng-hide="items[0]">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr ng-repeat="item in user.cart">
+        <td>{{$index + 1}}</td>
+        <td><img ng-src="{{item.image}}" alt="" /></td>
+        <td>{{item.title}}</td>
+        <td>{{item.price | currency}}</td>
+        <td><a class="btn-floating btn waves-effect waves-light blue" ng-click="removeItem($index)">-</a></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>Total:</td>
+        <td>{{totalPrice | currency}}</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
 
+    <a class="waves-effect waves-light btn" ng-click="purchaseItems()">Buy</a>
 </div>

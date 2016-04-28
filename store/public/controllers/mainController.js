@@ -6,7 +6,6 @@ var storeAppControllers = require('./storeAppControllers');
         .factory('dataTransfer', function() {
           var products = [];
           var categories = [];
-          var cart = [];
           var filter;
           var item;
 
@@ -34,12 +33,6 @@ var storeAppControllers = require('./storeAppControllers');
             },
             getItem: function () {
               return item;
-            },
-            addToCart: function (data) {
-              cart.push(data);
-            },
-            getCart: function () {
-              return cart;
             }
           };
 
@@ -76,7 +69,7 @@ var storeAppControllers = require('./storeAppControllers');
             controller: 'CartCtrl'
           }).
           state('store.profile', {
-            url: '/{user}',
+            // url: '/{user}',
             templateUrl: 'partials/userProfile.html',
             controller: 'ProfileCtrl'
           }).

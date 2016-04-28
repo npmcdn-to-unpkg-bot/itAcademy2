@@ -7,7 +7,6 @@ var storeAppControllers = require('./storeAppControllers');
         .factory('dataTransfer', function() {
           var products = [];
           var categories = [];
-          var cart = [];
           var filter;
           var item;
 
@@ -35,12 +34,6 @@ var storeAppControllers = require('./storeAppControllers');
             },
             getItem: function () {
               return item;
-            },
-            addToCart: function (data) {
-              cart.push(data);
-            },
-            getCart: function () {
-              return cart;
             }
           };
 
@@ -77,7 +70,7 @@ var storeAppControllers = require('./storeAppControllers');
             controller: 'CartCtrl'
           }).
           state('store.profile', {
-            url: '/{user}',
+            // url: '/{user}',
             templateUrl: 'partials/userProfile.html',
             controller: 'ProfileCtrl'
           }).
@@ -195,7 +188,6 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   };
 
   $scope.addToCart = function(item) {
-    dataTransfer.addToCart(item);
     $scope.user.cart.push(item);
     $cookies.putObject('user', $scope.user);
   }
@@ -251,7 +243,6 @@ storeAppControllers.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$st
     $http.post('api/login_user', formData)
 		.then(function(res){
       var user = res.data;
-      console.log(res);
       $cookies.putObject('user', user);
       $state.go('store', {id: $scope.store._id}, {reload: true});
 
@@ -286,7 +277,50 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
 
-  _.isEmpty(dataTransfer.getCart()) ? $scope.items = $scope.user.cart : $scope.items = dataTransfer.getCart()
+  $scope.removeItem = function(index) {
+    $scope.user.cart.splice(index, 1);
+    $cookies.putObject('user', $scope.user);
+  }
+
+  $scope.totalPrice = _.reduce($scope.user.cart, function (memo, item) {
+      return memo + item.price;
+    }, 0)
+
+  $scope.purchaseItems = function () {
+    var transactionDetails = {
+      source: $scope.user.email,
+      password: $scope.user.password,
+      destination: $scope.store.email,
+      amount: $scope.totalPrice
+    };
+
+    $http.post('http://localhost:3001/api/transfer', transactionDetails)
+    .then(function(res){
+      if (res.data.success) {
+        transactionDetails.token = res.data.token;
+        transactionDetails.items = $scope.user.cart;
+
+        /* $http.post('/api/purchaseItems', transactionDetails)
+        .then(function(res){
+
+
+        }, function(err){
+          console.log(err);
+        });
+        */
+
+
+        $scope.user.cart = [];
+        $cookies.putObject('user', $scope.user);
+        $state.go('store', {id: $scope.store._id}, {reload: true});
+      } else {
+        console.log(err);
+      }
+
+    }, function(err){
+      console.log(err);
+    });
+  }
 
 }]);
 

@@ -5,6 +5,8 @@ var Store = require('../models').Store;
 var ItemSet = require('../models').ItemSet;
 var Item = require('../models').Item;
 var User = require('../models').User;
+var Transaction = require('../models').Transaction;
+var Order = require('../models').Order;
 
 var _ = require('underscore');
 var Promise = require('bluebird');
@@ -65,6 +67,23 @@ module.exports.set = function(app) {
 		});
 
 	});
+
+	/*
+	app.post('/api/purchaseItems', function(req, res) {
+
+		Transaction.create({
+			token: req.body.token,
+			accountFrom: req.body.source,
+			accountTo: req.body.destination,
+			amount: req.body.amount
+		}).then(function(transaction) {
+			Order.create({
+				date: Date.now(),
+				itemSet: req.body.items,
+			})
+		})
+	})
+	*/
 
 	app.all('*', function(req, res, next) {
 		// Just send the index.html for other files to support HTML5Mode
