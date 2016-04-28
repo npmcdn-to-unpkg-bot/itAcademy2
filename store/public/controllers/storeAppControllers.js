@@ -119,7 +119,23 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
 		.then(function(res){
       var user = res.data;
       $cookies.putObject('user', user);
-      $state.go('store', {id: $scope.store._id}, {reload: true});
+
+      var bankUser = {
+        login: user.email,
+        password: user.password
+      };
+
+      $http.post('http://localhost:3001/api/accounts', bankUser)
+  		.then(function(res){
+        var user = $cookies.getObject('user');
+        user.amount = res.data.amount;
+
+        $cookies.putObject('user', user);
+        $state.go('store', {id: $scope.store._id}, {reload: true});
+
+  		}, function(err){
+        console.log(err);
+  		});
 
 		}, function(err){
       if (err.data.error.indexOf('E11000') !== -1) {
@@ -176,6 +192,42 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
   $scope.user = $cookies.getObject('user');
 
   _.isEmpty(dataTransfer.getCart()) ? $scope.items = $scope.user.cart : $scope.items = dataTransfer.getCart()
+
+}]);
+
+storeAppControllers.controller('ProfileCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
+  $scope.store = $cookies.getObject('store');
+  $scope.user = $cookies.getObject('user');
+
+  var bankUser = {
+    login: $scope.user.email,
+    password: $scope.user.password
+  }
+
+  var checkBalance = function () {
+    $http.post('http://localhost:3001/api/checkBalance', bankUser)
+    .then(function(res){
+      var user = $cookies.getObject('user');
+      $scope.user.amount = res.data.amount;
+
+      $cookies.putObject('user', user);
+
+    }, function(err){
+      console.log(err);
+    });
+  };
+  checkBalance();
+
+
+  $scope.getMoney = function (){
+    $http.post('http://localhost:3001/api/getMoney', bankUser)
+    .then(function(res){
+      checkBalance();
+
+    }, function(err){
+      console.log(err);
+    });
+  };
 
 }]);
 

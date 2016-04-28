@@ -34,3 +34,7 @@
 .item-buy > a {
   float: right;
 }
+
+.user-data-table > tbody > tr > td:first-child {
+  font-weight: bold;
+}
