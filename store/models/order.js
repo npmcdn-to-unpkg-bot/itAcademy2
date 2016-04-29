@@ -12,7 +12,11 @@ orderSchema.add({
     type: Date,
     required: true
   },
-  itemSet: [{type: Schema.Types.ObjectId, ref: 'Item'}],
+  itemSet: [],
+  user: {
+    type: String,
+    required: true
+  },
   transactionId: {
     type: Schema.Types.ObjectId
   }

@@ -20,12 +20,17 @@
         <span >
           {{item.price | currency}}
         </span>
-        <a class="waves-effect waves-light btn modal-trigger" ng-class="{'btn disabled': !user}">Add to Cart</a>
+        <a class="waves-effect waves-light btn modal-trigger" ng-class="{'btn disabled': !user}" ng-click="addToCart()">Add to Cart</a>
       </div>
-      <div class="">
+      <div>
         <p>
           {{item.count}} items available
         </p>
+      </div>
+      <div>
+        <a class="btn-floating btn waves-effect waves-light blue" ng-click="decreaseItemsNumber()"><i class="material-icons">remove</i></a>
+        <input type="text" name="name" ng-model="item.amountToBuy">
+        <a class="btn-floating btn waves-effect waves-light red" ng-click="increaseItemsNumber()"><i class="material-icons">add</i></a>
       </div>
       <div class="">
         <p>

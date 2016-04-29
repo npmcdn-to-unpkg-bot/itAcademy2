@@ -151,6 +151,7 @@ storeAppControllers.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$st
 storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
   $scope.store = $cookies.getObject('store');
   $scope.item =  dataTransfer.getItem() || $cookies.getObject('item');
+  $scope.item.amountToBuy = 0;
 
   var getCategories = function(){
 
@@ -166,6 +167,23 @@ storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$sta
     });
   }
 
+  $scope.increaseItemsNumber = function() {
+    if ($scope.item.amountToBuy < $scope.item.count) {
+      $scope.item.amountToBuy += 1;
+    }
+  };
+
+  $scope.decreaseItemsNumber = function() {
+    if ($scope.item.amountToBuy > 0) {
+      $scope.item.amountToBuy -= 1;
+    }
+  };
+
+  $scope.addToCart = function() {
+    $scope.user.cart.push($scope.item);
+    $cookies.putObject('user', $scope.user);
+  }
+
   dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
 }]);
 
@@ -179,7 +197,7 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
   }
 
   $scope.totalPrice = _.reduce($scope.user.cart, function (memo, item) {
-      return memo + item.price;
+      return memo + item.price*item.amountToBuy;
     }, 0)
 
   $scope.purchaseItems = function () {

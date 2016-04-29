@@ -5,6 +5,7 @@
         <th>#</th>
         <th>Item Image</th>
         <th>Item Name</th>
+        <th>Number of Items</th>
         <th>Item Price</th>
         <th></th>
       </tr>
@@ -17,15 +18,18 @@
         <td></td>
         <td></td>
         <td></td>
+        <td></td>
       </tr>
       <tr ng-repeat="item in user.cart">
         <td>{{$index + 1}}</td>
         <td><img ng-src="{{item.image}}" alt="" /></td>
         <td>{{item.title}}</td>
+        <td>{{item.amountToBuy}}</td>
         <td>{{item.price | currency}}</td>
-        <td><a class="btn-floating btn waves-effect waves-light blue" ng-click="removeItem($index)">-</a></td>
+        <td><a class="btn-floating btn waves-effect waves-light blue" ng-click="removeItem($index)"><i class="material-icons">remove</i></a></td>
       </tr>
       <tr>
+        <td></td>
         <td></td>
         <td></td>
         <td>Total:</td>

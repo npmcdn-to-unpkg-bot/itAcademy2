@@ -49,8 +49,9 @@ module.exports.set = function(app) {
 				var storeItem = _.find(storeItems, (storeItem) => {
 					return storeItem.itemId.toString() === item._id.toString()
 				});
-				return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), storeItem);
+				return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
 			})
+			console.log(result);
 
 			if (category) {
 				return res.send(result);
