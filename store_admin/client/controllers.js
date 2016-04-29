@@ -9,13 +9,12 @@ angular.module('myApp').controller('loginController',
       $scope.disabled = true;
 
       // call login from service
-      AuthService.login($scope.loginForm.storename, $scope.loginForm.password)
+      AuthService.login($scope.loginForm.username, $scope.loginForm.password)
         // handle success
         .then(function () {
           $location.path('/');
           $scope.disabled = false;
-          $scope.loginForm = {};
-        })
+          $scope.loginForm = {};        })
         // handle error
         .catch(function () {
           $scope.error = true;
@@ -55,7 +54,7 @@ angular.module('myApp').controller('registerController',
       $scope.disabled = true;
 
       // call register from service
-      AuthService.register($scope.registerForm.storename, $scope.registerForm.password)
+      AuthService.register($scope.registerForm.username, $scope.registerForm.password)
         // handle success
         .then(function () {
           $location.path('/login');

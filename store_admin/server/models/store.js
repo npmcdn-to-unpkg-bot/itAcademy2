@@ -5,22 +5,10 @@ var passportLocalMongoose = require('passport-local-mongoose');
 
 
 var Store = new Schema({
-    storename: {
-        type: String,
-        required: true
-     },
-     password: {
-         type: String,
-         required: true
-     },
-     email: {
-         type: String,
-         required: true
-     },
-     account: {
-         type: Number,
-         required: true
-    }
+    username: String,
+    password: String,
+    email: String,
+    account: Number
 });
 
 Store.plugin(passportLocalMongoose);

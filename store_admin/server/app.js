@@ -12,7 +12,6 @@ var localStrategy = require('passport-local' ).Strategy;
 
 // mongoose
 mongoose.connect('mongodb://admin:admin@ds019940.mlab.com:19940/elif_store');
-// mongoose.connect('mongodb://localhost/store');
 
 // store schema/model
 var Store = require('./models/store.js');
