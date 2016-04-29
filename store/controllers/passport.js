@@ -1,4 +1,7 @@
 var config = require('../config');
+var request = require('request');
+var fs = require('fs');
+
 var passport = require('passport');
 var mongoose = require('mongoose');
 var LocalStrategy = require('passport-local').Strategy;
@@ -26,21 +29,21 @@ module.exports = function(app) {
     passwordField: 'password'
   }, function (username, password, done) {
 
-      User.findOne({email: username}, function (err, user) {
+    User.findOne({email: username}, function (err, user) {
 
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          return done(null, false, {alert: 'Incorrect username.'});
-        }
-        if (user.password != password) {
-          return done(null, false, {alert: 'Incorrect password.'});
-        }
-        return done(null, user);
-      });
-    }
-  ));
+      if (err) {
+        return done(err);
+      }
+      if (!user) {
+        return done(null, false, {alert: 'Incorrect username.'});
+      }
+      if (user.password != password) {
+        return done(null, false, {alert: 'Incorrect password.'});
+      }
+      return done(null, user);
+    });
+  }
+));
 
   passport.serializeUser(function(user, done) {
     done(null, user.id);
@@ -65,6 +68,7 @@ module.exports = function(app) {
   });
 
   app.post('/api/add_user', function(req, res) {
+    var appRes = res;
     var user = new User();
     user.storeId = req.body.storeId,
 		user.name = req.body.name,
@@ -73,14 +77,33 @@ module.exports = function(app) {
 		user.password = req.body.password,
 		user.class = 'registered'
 
-    user.save(function (err) {
-      if (err) {
-        res.json({'alert': 'Registration error.'})
-      } else {
-        res.send(user);
+    // registering user at Bank
+    request(
+      {
+        headers: {'content-type' : 'application/x-www-form-urlencoded'},
+        method: 'POST',
+        uri: 'http://localhost:3001/api/accounts',
+        form: {
+          login: user.email,
+          password: user.password
+        }
+      }, function(error, response, body) {
+      if (error) {
+        return console.log(error);
       };
+
+      user.save(function (err) {
+        if (err) {
+          res.json({'alert': 'Registration error.'})
+        } else {
+          res.send(user);
+        };
+      });
+
     });
+
   });
+
 
   app.get('/api/logout', function(req, res) {
     console.log('logout');

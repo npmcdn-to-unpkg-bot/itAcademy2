@@ -118,23 +118,7 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
 		.then(function(res){
       var user = res.data;
       $cookies.putObject('user', user);
-
-      var bankUser = {
-        login: user.email,
-        password: user.password
-      };
-
-      $http.post('http://localhost:3001/api/accounts', bankUser)
-  		.then(function(res){
-        var user = $cookies.getObject('user');
-        user.amount = res.data.amount;
-
-        $cookies.putObject('user', user);
-        $state.go('store', {id: $scope.store._id}, {reload: true});
-
-  		}, function(err){
-        console.log(err);
-  		});
+      $state.go('store', {id: $scope.store._id}, {reload: true});
 
 		}, function(err){
       if (err.data.error.indexOf('E11000') !== -1) {
@@ -247,7 +231,7 @@ storeAppControllers.controller('ProfileCtrl', ['$scope', '$http', '$cookies', '$
 
   var checkBalance = function () {
     $http.post('http://localhost:3001/api/checkBalance', bankUser)
-    .then(function(res){
+    .then(function(res) {
       var user = $cookies.getObject('user');
       $scope.user.amount = res.data.amount;
 
