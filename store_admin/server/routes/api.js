@@ -6,7 +6,7 @@ var Store = require('../models/store.js');
 
 
 router.post('/register', function(req, res) {
-  Store.register(new Store({ storename: req.body.storename }),
+  Store.register(new Store({ username: req.body.username }),
     req.body.password, function(err, account) {
     if (err) {
       return res.status(500).json({

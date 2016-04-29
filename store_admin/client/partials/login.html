@@ -1,17 +1,28 @@
-<div class="col-md-6 col-md-offset-3">
-  <h1>Login</h1>
-  <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
-  <form class="form" ng-submit="login()">
-    <div class="form-group">
-      <label>Storename</label>
-      <input type="text" class="form-control" name="storename" ng-model="loginForm.storename" required>
+<div class="jumbotron jumbotron-home jumbotron-inverse">
+  <div class="container-responsive">
+    <div class="columns">
+      <div class="homepage-intro column">
+        <h1 class="display-heading-1 jumbotron-title">Sign in to StoreSystem!</h1>
+        <p class="display-intro jumbotron-lead">StoreSystem - powerful tool to create your own store</p>
+      </div>
+      <div class="signup column">
+        <div class="d-none-sm-dn">
+        <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
+        <form class="form" ng-submit="login()">
+          <div class="form-group">
+            <label>Store Name</label>
+            <input type="text" class="form-control" name="username" ng-model="loginForm.username" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+              <input type="password" class="form-control" name="password" ng-model="loginForm.password" required>
+            </div>
+            <div >
+              <button type="submit" class="btn btn-success" ng-disabled="disabled">Log In</button>
+              <p class="pull-right">Need an account? <a href="#/register">Sign Up</a></p>
+            </div>
+        </form>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Password</label>
-        <input type="password" class="form-control" name="password" ng-model="loginForm.password" required>
-      </div>
-      <div>
-        <button type="submit" class="btn btn-default" ng-disabled="disabled">Login</button>
-      </div>
-  </form>
+  </div>
 </div>
