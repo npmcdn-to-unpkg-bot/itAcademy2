@@ -1,6 +1,5 @@
 var config = require('../config');
 var request = require('request');
-var fs = require('fs');
 
 var passport = require('passport');
 var mongoose = require('mongoose');

@@ -10,6 +10,7 @@ var Order = require('../models').Order;
 
 var _ = require('underscore');
 var Promise = require('bluebird');
+var request = require('request');
 
 module.exports.set = function(app) {
 	require('./passport')(app);
@@ -51,7 +52,6 @@ module.exports.set = function(app) {
 				});
 				return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
 			})
-			console.log(result);
 
 			if (category) {
 				return res.send(result);
@@ -69,22 +69,105 @@ module.exports.set = function(app) {
 
 	});
 
-	/*
-	app.post('/api/purchaseItems', function(req, res) {
+	app.post('/api/order', function (req, res) {
+		var order = {
+			date: Date.now(),
+			user: req.body.user,
+			$push: {itemSet: req.body.itemDetails}
+		}
 
-		Transaction.create({
-			token: req.body.token,
-			accountFrom: req.body.source,
-			accountTo: req.body.destination,
-			amount: req.body.amount
-		}).then(function(transaction) {
-			Order.create({
+		var options = {
+			upsert: true
+		};
+
+		Order.findOneAndUpdate({'user': req.body.user, 'transactionId': {$exists: false}}, order, options).
+		then(function(doc) {
+			console.log(doc)
+		}).
+		catch(function(err) {
+			console.log(err);
+		});
+
+	})
+
+	app.post('/api/makePurchase', function (req, res) {
+		var cartIds = _.map(req.body.user.cart, function(item) {
+			return item.itemId;
+		});
+
+		var cartItems = req.body.user.cart;
+
+		ItemSet.find({'itemId': {$in: cartIds}, 'storeId': req.body.store._id}).lean()
+		.then(function(items) {
+			var result = _.map(items, (item) => {
+				var cartItem = _.find(cartItems, (cartItem) => {
+					return cartItem.itemId.toString() === item.itemId.toString()
+				});
+				return cartItem.price === item.price
+			})
+
+			if (result.indexOf(false) !== -1) {
+				return res.send('Incorrect items price, please add them one more time')
+			} else {
+				return transferMoney();
+			}
+		})
+		.then(function(bankTransaction) {
+			bankTransaction = JSON.parse(bankTransaction);
+
+			if (bankTransaction.success) {
+				var transaction = {
+					token: bankTransaction.token,
+					accountFrom: req.body.user.email,
+					accountTo: req.body.store.email,
+					amount: req.body.totalPrice
+				};
+				return Transaction.create(transaction)
+			};
+		})
+		.then(function(transaction) {
+			var orderSet = _.map(cartItems, function(cartItem) {
+				return _.pick(cartItem, 'itemId', 'price', 'amountToBuy')
+			})
+
+			return Order.create({
 				date: Date.now(),
-				itemSet: req.body.items,
+				itemSet: orderSet,
+				user: req.body.user.email,
+				transactionId: transaction._id
 			})
 		})
+		.then(function(order) {
+			return res.json(order);
+		})
+		.catch(function(err) {
+			return res.send(err)
+		})
+
+		var transferMoney = function() {
+			return new Promise(function(resolve, reject) {
+				request(
+		      {
+		        headers: {'content-type' : 'application/x-www-form-urlencoded'},
+		        method: 'POST',
+		        uri: 'http://localhost:3001/api/transfer',
+		        form: {
+		          source: req.body.user.email,
+		          password: req.body.user.password,
+							destination: req.body.store.email,
+							amount: req.body.totalPrice
+		        }
+		      }, function(error, response, body) {
+		      if (error) {
+		        reject(error);
+		      };
+
+					resolve(body);
+		    });
+			})
+		};
+
 	})
-	*/
 
 	app.all('*', function(req, res, next) {
 		// Just send the index.html for other files to support HTML5Mode

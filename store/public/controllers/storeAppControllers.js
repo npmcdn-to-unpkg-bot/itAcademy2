@@ -100,6 +100,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   };
 
   $scope.addToCart = function(item) {
+    item.amountToBuy = 1;
     $scope.user.cart.push(item);
     $cookies.putObject('user', $scope.user);
   }
@@ -150,8 +151,9 @@ storeAppControllers.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$st
 
 storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
   $scope.store = $cookies.getObject('store');
+  $scope.user = $cookies.getObject('user');
   $scope.item =  dataTransfer.getItem() || $cookies.getObject('item');
-  $scope.item.amountToBuy = 0;
+  $scope.item.amountToBuy = 1;
 
   var getCategories = function(){
 
@@ -180,6 +182,24 @@ storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$sta
   };
 
   $scope.addToCart = function() {
+    /* Adding items to Order
+    var itemToOrder = {
+      itemDetails: {
+        itemId: $scope.item.itemId,
+        price: $scope.item.price,
+        amountToBuy: $scope.item.amountToBuy
+      },
+      user: $scope.user.email
+    };
+
+    $http.post('/api/order', itemToOrder)
+    .then(function(res) {
+
+    }, function(err){
+      console.log(err);
+    });
+    */
+
     $scope.user.cart.push($scope.item);
     $cookies.putObject('user', $scope.user);
   }
@@ -201,7 +221,21 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
     }, 0)
 
   $scope.purchaseItems = function () {
-    var transactionDetails = {
+    var purchaseInfo = {
+      user: $scope.user,
+      store: $scope.store,
+      totalPrice: $scope.totalPrice
+    }
+
+    $http.post('api/makePurchase', purchaseInfo)
+    .then(function(res) {
+      $scope.user.cart = [];
+      $cookies.putObject('user', $scope.user);
+      $state.go('store', {id: $scope.store._id}, {reload: true});
+    }, function (err) {
+      console.log(err);
+    });
+    /* var transactionDetails = {
       source: $scope.user.email,
       password: $scope.user.password,
       destination: $scope.store.email,
@@ -214,16 +248,6 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
         transactionDetails.token = res.data.token;
         transactionDetails.items = $scope.user.cart;
 
-        /* $http.post('/api/purchaseItems', transactionDetails)
-        .then(function(res){
-
-
-        }, function(err){
-          console.log(err);
-        });
-        */
-
-
         $scope.user.cart = [];
         $cookies.putObject('user', $scope.user);
         $state.go('store', {id: $scope.store._id}, {reload: true});
@@ -234,6 +258,7 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
     }, function(err){
       console.log(err);
     });
+  */
   }
 
 }]);
