@@ -299,6 +299,12 @@ storeAppControllers.controller('ProfileCtrl', ['$scope', '$http', '$cookies', '$
 
 }]);
 
+storeAppControllers.controller('ProfileCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
+  $scope.store = $cookies.getObject('store');
+  $scope.user = $cookies.getObject('user');
+
+}]);
+
 var underscore = angular.module('underscore', []);
 underscore.factory('_', ['$window', function($window) {
   return $window._;
