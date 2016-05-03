@@ -70,7 +70,7 @@ var storeAppControllers = require('./storeAppControllers');
             controller: 'CartCtrl'
           }).
           state('store.profile', {
-            url: '/user={user}',
+            url: '/user=:userId',
             templateUrl: 'partials/userProfile.html',
             controller: 'ProfileCtrl'
           }).
@@ -194,6 +194,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   $scope.addToCart = function(item) {
     item.amountToBuy = 1;
+    $scope.user = $cookies.getObject('user');
     $scope.user.cart.push(item);
     $cookies.putObject('user', $scope.user);
   }
@@ -392,9 +393,20 @@ storeAppControllers.controller('ProfileCtrl', ['$scope', '$http', '$cookies', '$
 
 }]);
 
-storeAppControllers.controller('ProfileCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
+storeAppControllers.controller('OrdersCtrl', ['$scope', '$http', '$cookies', '$state', 'dataTransfer', function($scope, $http, $cookies, $state, dataTransfer){
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
+
+  var getOrders = function () {
+    $http.get('api/orders/' + $scope.user.email)
+    .then(function(res) {
+      $scope.orders = res.data;
+
+    }, function(err){
+      console.log(err);
+    });
+  };
+  getOrders();
 
 }]);
 
@@ -405,4 +417,4 @@ underscore.factory('_', ['$window', function($window) {
 
 module.exports = storeAppControllers;
 
-},{}]},{},[1,2]);
+},{}]},{},[2,1]);

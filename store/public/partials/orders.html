@@ -1,1 +1,38 @@
-<h1>Orders will be here!</h1>
+<table class="orders-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Items</th>
+      <th>Date</th>
+      <th>OrderId</th>
+      <th>Prices</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr ng-hide="orders[0]">
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr ng-repeat="order in orders">
+      <td>{{$index + 1}}</td>
+      <td>
+        <p ng-repeat="item in order.itemSet"><a ui-sref="store.item({item_title: item.title})">{{item.title}}</a></p>
+      </td>
+      <td>{{order.date | date:"MM/dd/yyyy 'at' h:mma"}}</td>
+      <td>{{order._id}}</td>
+      <td>
+        <p ng-repeat="item in order.itemSet">{{item.price | currency}}</p>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>

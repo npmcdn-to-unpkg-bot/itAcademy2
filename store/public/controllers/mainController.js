@@ -69,7 +69,7 @@ var storeAppControllers = require('./storeAppControllers');
             controller: 'CartCtrl'
           }).
           state('store.profile', {
-            url: '/user={user}',
+            url: '/user=:userId',
             templateUrl: 'partials/userProfile.html',
             controller: 'ProfileCtrl'
           }).

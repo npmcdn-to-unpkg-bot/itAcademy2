@@ -127,7 +127,7 @@ module.exports.set = function(app) {
 		})
 		.then(function(transaction) {
 			var orderSet = _.map(cartItems, function(cartItem) {
-				return _.pick(cartItem, 'itemId', 'price', 'amountToBuy')
+				return _.pick(cartItem, 'itemId', 'price', 'amountToBuy', 'title')
 			})
 
 			return Order.create({
@@ -166,6 +166,22 @@ module.exports.set = function(app) {
 		    });
 			})
 		};
+
+	})
+
+	app.get('/api/orders/:userEmail', function (req, res) {
+		var query = {user: req.params.userEmail}
+		var userOrders = [];
+
+
+		Order.find(query).lean()
+		.then(function(orders) {
+			var ordersClean = _.map(orders, function(order) {
+				return _.pick(order, 'itemSet', 'date', '_id')
+			});
+
+			res.json(ordersClean);
+		});
 
 	})
 
