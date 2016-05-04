@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var guid = require('../guidGenerator');
 var Promise = require('bluebird');
-var User = require('../models/user');
-var Transaction = require('../models/transaction');
+var Account = require('../models/Account');
+var Transaction = require('../models/Transaction');
 var mongoose = require('mongoose');
 
 var isAuthenticated = function (req, res, next) {
@@ -46,7 +46,7 @@ module.exports = function(passport) {
         res.render('register',{message: req.flash('message')});
     });
 
-    router.post('/signup', passport('sugnup', {
+    router.post('/signup', passport.authenticate('signup', {
         successRedirect: '/home',
         failureRedirect: '/signup',
         failureFlash: true

@@ -1,14 +1,8 @@
 
-var crypto = require('crypto'),
-    mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    async = require('async');
+var mongoose = require('mongoose');
 
-var AccountSchema = new mongoose.Schema({
+module.exports = mongoose.model('Account', {
     login : {type: String, unique: true, required: true},
     password : {type: String, required: true},
-    amount : {type: Number, min: 0}
+    amount : {type: Number, min: 0, default: 0}
 });
-
-var Account = mongoose.model('Account', AccountSchema);
-

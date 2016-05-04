@@ -1,14 +1,10 @@
-var crypto = require('crypto'),
-    mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    async = require('async');
+var mongoose = require('mongoose');
 
-var TransactionSchema = new mongoose.Schema({
+module.exports = mongoose.model('Transaction',{
+
     token: {type: String, unique: true},
     time: Date,
     source: String,
     destination: String,
     amount: Number
 });
-
-var Transaction = mongoose.model('Transaction', TransactionSchema);
