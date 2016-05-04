@@ -6,7 +6,7 @@ var app = express();
 var mongoose = require('mongoose');
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-var methodOverride = require('method-override');
+    var methodOverride = require('method-override');
 var guid = require('./guidGenerator');
 var Promise = require('bluebird');
 mongoose.connect('mongodb://elifuser:qwerty12@ds015710.mlab.com:15710/elifbankdb');
@@ -18,22 +18,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 app.use(methodOverride());
 
-app.use(express.static(__dirname + '/public'));
+var Account = require('./models/Account.js');
 
-var Account = mongoose.model('Account', {
-    login : String,
-    password : String,
-    amount : {type: Number, min: 0}
-});
-
-var Transaction = mongoose.model('Transaction', {
-    token: {type: String, unique: true},
-    time: Date,
-    source: String,
-    destination: String,
-    amount: Number
-});
-
+var Transaction = mongoose.model('./models/Transaction.js');
 
 app.get('/api/accounts', function(req, res) {
     Account.find(function(err, accounts) {
