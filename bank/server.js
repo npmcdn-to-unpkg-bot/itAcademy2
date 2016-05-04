@@ -20,7 +20,21 @@ app.use(methodOverride());
 
 var Account = require('./models/Account.js');
 
-var Transaction = mongoose.model('./models/Transaction.js');
+var Transaction = require('./models/Transaction.js');
+
+var isAuthenticated = function (req, res, next) {
+    if (req.isAuthenticated())
+        return next();
+    res.redirect('/');
+};
+
+var passport = require('passport');
+var expressSession = require('express-session');
+app.use(expressSession({secret: 'mySecretKey'}));
+app.use(passport.initialize());
+app.use(passport.session());
+var initPassport = require('./passport/init');
+initPassport(passport);
 
 app.get('/api/accounts', function(req, res) {
     Account.find(function(err, accounts) {
