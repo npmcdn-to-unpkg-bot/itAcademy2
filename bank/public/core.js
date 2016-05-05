@@ -11,6 +11,19 @@ function mainController($scope, $http) {
         .error(function(data) {
             console.log('Error: ' + data);
         });
+
+    $scope.checkBalance = function()
+    {
+        $http.get('/api/checkBalance', $scope.formData)
+            .success(function(data)
+            {
+                $scope.balance = data;
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            })
+    };
+
     $scope.createAccount = function() {
         $http.post('/api/accounts', $scope.formData)
             .success(function(data) {

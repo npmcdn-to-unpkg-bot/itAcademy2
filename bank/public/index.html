@@ -39,36 +39,18 @@
 
         <div id="account-form" class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
-                <form>
+                <form class="form-signin" action="/login" method="post">
                     <div class="form-group">
 
                         <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.login">
                         <input type="password" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="createAccount()">Register</button>
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="getMoney()">Get Money</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
                 </form>
+                <a href="/signup" class="text-center new-account">Create an account</a>
             </div>
         </div>
-
-        <div class="container">
-            <div class="col-sm-8 col-sm-offset-2 text-center">
-                <form>
-                    <div class="form-group">
-
-                        <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.source">
-                        <input type="password" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
-                        <input type="text" class="form-control input-lg text-center" placeholder="Type your destination here" ng-model="formData.destination">
-                        <input type="text" class="form-control input-lg text-center" placeholder="Enter your amount here" ng-model="formData.amount">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="transfer()">Make transfer</button>
-                </form>
-            </div>
-        </div>
-
-
     </div>
 </body>
 </html>

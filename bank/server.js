@@ -18,9 +18,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 app.use(methodOverride());
 
-var Account = require('./models/Account.js');
+var Account = require('./models/account.js');
 
-var Transaction = require('./models/Transaction.js');
+var Transaction = require('./models/transaction.js');
 
 var isAuthenticated = function (req, res, next) {
     if (req.isAuthenticated())

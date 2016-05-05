@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
 var guid = require('../guidGenerator');
 var Promise = require('bluebird');
-var Account = require('../models/Account');
-var Transaction = require('../models/Transaction');
-var mongoose = require('mongoose');
+var Account = require('../models/account');
+var Transaction = require('../models/transaction');
+
 
 var isAuthenticated = function (req, res, next) {
     // if user is authenticated in the session, call the next() to call the next request handler
@@ -28,6 +29,17 @@ module.exports = function(passport) {
         failureFlash: true
     }));
 
+    router.get('/api/accounts', function(req, res)
+    {
+        Account.find(function(err, accounts) {
+            if(err)
+            {
+                res.send(err);
+            }
+            res.json(accounts);
+        });
+    });
+
     router.post('/salary', isAuthenticated, function(req,res) {
         var token = guid.Guid();
         var currentAccount = req.account;
@@ -43,7 +55,7 @@ module.exports = function(passport) {
     });
 
     router.get('/signup', function(req, res){
-        res.render('register',{message: req.flash('message')});
+        res.render('signup',{message: req.flash('message')});
     });
 
     router.post('/signup', passport.authenticate('signup', {
@@ -54,6 +66,16 @@ module.exports = function(passport) {
 
     router.get('/transfer', isAuthenticated, function(req, res){
         res.render('transfer', {account: req.account });
+    });
+
+    //geting users operation for home page
+    router.get('/api/operations', isAuthenticated, function(req, res)
+    {
+        var operations = [];
+        Promise.all([
+            //Transaction.find({'source': req.account.login}),
+            //Transaction.find({'destination': req.account.login})
+        ]);
     });
 
     router.post('/transfer', isAuthenticated, function(req, res){
