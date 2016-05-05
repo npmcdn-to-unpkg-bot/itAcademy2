@@ -50,7 +50,7 @@ var storeAppControllers = require('./storeAppControllers');
             controller: 'StoreCtrl'
           }).
           state('store', {
-            url: '/store/:id',
+            url: '/store/?storeId&sort&filter',
             templateUrl: 'partials/storeFront.html',
             controller: 'StoreFrontCtrl'
           }).
@@ -120,12 +120,40 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
 
+  var filter = $scope.filter = $stateParams.filter;
+  var sort = $scope.sort = $stateParams.sort;
+
+  if (sort === 'price_desc') {
+    $scope.selectedDesc = true;
+  } else if (sort === 'price_asc') {
+    $scope.selectedAsc = true;
+  }
+
+  $scope.sort = function(sortOption) {
+    var url = 'api/store/?storeId=' + $scope.store._id + '&sort=' + sortOption;
+
+    if (filter) {
+      url = url + '&category=' + filter;
+    }
+
+    $http.get(url)
+    .then(function(res){
+      if (res.data.error)
+        return console.log(res.data.error);
+
+      dataTransfer.setProducts(res.data.products)
+      $state.go('store', {storeId: $scope.store._id, sort: sortOption}, {location: true});
+    }, function(err){
+      console.log(err);
+    });
+  }
+
   $scope.logout = function () {
     $http.get('/api/logout')
     .then(function() {
       $cookies.remove('user');
       delete $scope.user;
-      $state.go('store', {id: $scope.store._id}, {reload: true});
+      $state.go('store', {storeId: $scope.store._id}, {reload: true});
     }, function(err) {
       console.log(err);
       $scope.alert = 'Logout failed'
@@ -135,15 +163,18 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   // Start of Filtering section
   $scope.filterByCategory = function (category) {
-    var url = 'api/store/'+ $scope.store._id + '?category=' + category;
+    var url = 'api/store/?storeId='+ $scope.store._id + '&category=' + category;
+
+    if (sort) {
+      url = url + '&sort=' + sort;
+    }
 
     $http.get(url)
 		.then(function(res){
-      dataTransfer.setProducts(res.data);
+      dataTransfer.setProducts(res.data.products);
+      $scope.products = res.data.products;
 
-      dataTransfer.setFilter(category);
-      $state.go('store', {id: $scope.store._id, category: category}, {reload: true});
-
+      $state.go('store', {storeId: $scope.store._id, filter: category, sort: sort}, {location: true});
 		}, function(err){
       console.log(err);
 		});
@@ -151,22 +182,30 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   $scope.showAll = function() {
     dataTransfer.setProducts([]);
-    dataTransfer.setFilter('');
-    $state.go('store', {id: $scope.store._id}, {reload: true});
+    $state.go('store', {storeId: $scope.store._id}, {reload: true, inherit: false});
   };
   // End of filtering section
 
   // START of populate data for the main page
   var getProducts = function(){
+    var url = 'api/store/?storeId=' + $scope.store._id;
 
-    $http.get('api/store/' + $scope.store._id)
+    if (filter && sort) {
+      url += '&category=' + filter + '&sort=' + sort;
+    } else if (filter) {
+      url += '&category=' + filter;
+    } else if (sort) {
+      url += '&sort=' + sort;
+    }
+
+    $http.get(url)
     .then(function(res){
       if (res.data.error)
         return console.log(res.data.error);
 
-      $scope.products = res.data[0];
-      $scope.categories = res.data[1];
-      dataTransfer.setCategories(res.data[1]);
+      $scope.products = res.data.products;
+      $scope.categories = res.data.categories;
+      dataTransfer.setCategories(res.data.categories);
     }, function(err){
       console.log(err);
     });
@@ -174,13 +213,13 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   var getCategories = function(){
 
-    $http.get('api/store/' + $scope.store._id)
+    $http.get('api/store/?storeId=' + $scope.store._id)
     .then(function(res){
       if (res.data.error)
         return console.log(res.data.error);
 
-      $scope.categories = res.data[1];
-      dataTransfer.setCategories(res.data[1]);
+      $scope.categories = res.data.categories;
+      dataTransfer.setCategories(res.data.categories);
     }, function(err){
       console.log(err);
     });
@@ -199,7 +238,6 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $cookies.putObject('user', $scope.user);
   }
 
-  dataTransfer.getFilter() ? $scope.filter = dataTransfer.getFilter() : '';
   dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
   dataTransfer.getProducts().length > 0 ? $scope.products = dataTransfer.getProducts() : getProducts();
 }]);
@@ -213,7 +251,7 @@ storeAppControllers.controller('RegisterCtrl', ['$scope', '$http', '$cookies', '
 		.then(function(res){
       var user = res.data;
       $cookies.putObject('user', user);
-      $state.go('store', {id: $scope.store._id}, {reload: true});
+      $state.go('store', {storeId: $scope.store._id}, {reload: true});
 
 		}, function(err){
       if (err.data.error.indexOf('E11000') !== -1) {
@@ -235,7 +273,7 @@ storeAppControllers.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$st
 		.then(function(res){
       var user = res.data;
       $cookies.putObject('user', user);
-      $state.go('store', {id: $scope.store._id}, {reload: true});
+      $state.go('store', {storeId: $scope.store._id}, {reload: true});
 
 		}, function(err){
       console.log(err);
@@ -325,7 +363,7 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
     .then(function(res) {
       $scope.user.cart = [];
       $cookies.putObject('user', $scope.user);
-      $state.go('store', {id: $scope.store._id}, {reload: true});
+      $state.go('store', {storeId: $scope.store._id}, {reload: true});
     }, function (err) {
       console.log(err);
     });
@@ -417,4 +455,4 @@ underscore.factory('_', ['$window', function($window) {
 
 module.exports = storeAppControllers;
 
-},{}]},{},[2,1]);
+},{}]},{},[1,2]);

@@ -15,8 +15,11 @@ app.use(express.static(__dirname + '/public'));
 
 require('./controllers').set(app);
 
-module.exports.start = function() {
+var start = function() {
   app.listen(config.port, function () {
     console.log('Store app listening on port ' + config.port);
   });
 }
+
+start();
+// module.exports.start = start();

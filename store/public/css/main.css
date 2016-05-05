@@ -43,3 +43,7 @@
   background-color: #ffd1c1;
   font-weight: 900;
 }
+
+.sort > div > div > select {
+  display: inline-block;
+}

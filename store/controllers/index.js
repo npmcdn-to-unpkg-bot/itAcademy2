@@ -26,12 +26,20 @@ module.exports.set = function(app) {
 	});
 
 	// created itemsToSend in order to form and populate array of products for the store
-	app.get('/api/store/:id*', function (req, res) {
-		var storeId = req.params.id;
+	app.get('/api/store/*', function (req, res) {
+		var storeId = req.query.storeId;
 		var category = req.query.category;
 		var storeItems = [];
+		var sortOption = req.query.sort;
+		var sortQuery;
 
-		ItemSet.find({storeId: storeId}).lean()
+		if (sortOption === 'price_desc') {
+			sortQuery = {price: -1};
+		} else if (sortOption === 'price_asc') {
+			sortQuery = {price: 1};
+		};
+
+		ItemSet.find({storeId: storeId}).sort(sortQuery).lean()
 		.then(function(data) {
 			storeItems = data;
 			var storeItemsIds = _.map(storeItems, function(storeItem) {
@@ -46,21 +54,27 @@ module.exports.set = function(app) {
 			return Item.find(filter).lean();
 		})
 		.then(function(items) {
-			var result = _.map(items, (item) => {
-				var storeItem = _.find(storeItems, (storeItem) => {
+			var result = {};
+
+			result.products = _.map(storeItems, (storeItem) => {
+				var item = _.find(items, (item) => {
 					return storeItem.itemId.toString() === item._id.toString()
 				});
 				return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
 			})
 
 			if (category) {
+				result.products = _.filter(result.products, (item) => {
+					return _.has(item, 'category');
+				});
+
 				return res.send(result);
 			} else {
-				var categories = _.uniq(_.map(result, (item) => {
+				result.categories = _.uniq(_.map(result.products, (item) => {
 					return item.category;
 				}));
 
-				return res.send([result, categories]);
+				return res.send(result);
 			}
 		})
 		.catch(function(err){

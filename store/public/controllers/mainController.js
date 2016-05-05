@@ -49,7 +49,7 @@ var storeAppControllers = require('./storeAppControllers');
             controller: 'StoreCtrl'
           }).
           state('store', {
-            url: '/store/:id',
+            url: '/store/?storeId&sort&filter',
             templateUrl: 'partials/storeFront.html',
             controller: 'StoreFrontCtrl'
           }).

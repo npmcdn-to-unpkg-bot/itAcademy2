@@ -3,7 +3,7 @@
 
     <nav>
       <div class="nav-wrapper">
-        <a ui-sref="store({id: store._id})" class="brand-logo">{{store.name}}</a>
+        <a ui-sref="store({storeId: store._id})" class="brand-logo">{{store.name}}</a>
         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
         <ul class="right hide-on-med-and-down">
           <li ng-show="user">Hello, {{user.name}} </li>
@@ -40,10 +40,26 @@
 
           <!-- put outer div to group products and filter -->
           <div>
+            <div class="sort collection col s9">
+              <div class="row">
+                <div class="input-field col s4">
+                  <input placeholder="Search products" id="search" ng-model="sortData.search">
+                </div>
+
+                <div class="input-field col s4 offset-s4">
+                  <select ng-model="sortData.sort" ng-change="sort(sortData.sort)">
+                    <option value="" disabled selected>Choose sorting</option>
+                    <option value="price_desc" ng-selected="selectedDesc">Price: descending</option>
+                    <option value="price_asc" ng-selected="selectedAsc">Price: ascending</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div class="collection col s9" ng-show="filter">
               <a ng-click="showAll()">
                 <div class="chip">
-                  {{products[0].category}}
+                  {{filter}}
                   <i class="material-icons">close</i>
                 </div>
               </a>
