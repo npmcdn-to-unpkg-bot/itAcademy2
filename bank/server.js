@@ -58,17 +58,17 @@ if (app.get('env') === 'development') {
     });
 }
 
-app.get('/api/accounts', function(req, res) {
-    Account.find(function(err, accounts) {
-        if(err)
-        {
-            res.send(err);
-        }
-        res.json(accounts);
-    });
-});
+//app.get('/api/accounts', function(req, res) {
+//    Account.find(function(err, accounts) {
+//        if(err)
+//        {
+//            res.send(err);
+//        }
+//        res.json(accounts);
+//    });
+//});
 
-app.get('/api/checkBalance', function(req, res) {
+/*app.get('/api/checkBalance', function(req, res) {
    Account.findOne({ 'login': req.body.login, 'password': req.body.password},
        function(err, account) {
             if(err)
@@ -77,156 +77,156 @@ app.get('/api/checkBalance', function(req, res) {
            }
            res.json(account);
    });
-});
+});*/
 
-app.post('/api/transfer', function(req, res) {
-    var token = guid.Guid();
-   /* Transaction.create({
-        token: token,
-        time: Date.now(),
-        source: req.body.source,
-        destination: req.body.destination,
-        amount: req.body.amount
-    }).then(function() {
-        return Account.update({
-                'login': req.body.source,
-                'password': req.body.password
-            },
-            {
-                $dec: {amount: req.body.amount}
-            });
-    }).catch(function (err) {
-        res.send({success: false,
-            message: "Bad data entered!"});
-        })
-    .then( function() {
-        return  Account.update({'login': req.body.destination}, { $inc: { amount: req.body.amount }})
-    }).catch(function (err) {
-        res.send({
-            success: false,
-            message: "serv err"
-        });
-    })
-    .then(function() {
-        res.json({
-            success: success,
-            message: message,
-            token: token
-        });
-    });
-    */
+//app.post('/api/transfer', function(req, res) {
+//    var token = guid.Guid();
+//   /* Transaction.create({
+//        token: token,
+//        time: Date.now(),
+//        source: req.body.source,
+//        destination: req.body.destination,
+//        amount: req.body.amount
+//    }).then(function() {
+//        return Account.update({
+//                'login': req.body.source,
+//                'password': req.body.password
+//            },
+//            {
+//                $dec: {amount: req.body.amount}
+//            });
+//    }).catch(function (err) {
+//        res.send({success: false,
+//            message: "Bad data entered!"});
+//        })
+//    .then( function() {
+//        eturn  Account.update({'login': req.body.destination}, { $inc: { amount: req.body.amount }})
+//    }).catch(function (err) {
+//        res.send({
+//            success: false,
+//            message: "serv err"
+//        });
+//    })
+//    .then(function() {
+//        res.json({
+//            success: success,
+//            message: message,
+//            token: token
+//        });
+//    });
+//    */
+//
+//
+//
+//    ////
+//    Promise.all([
+//        Account.update({'login': req.body.source, 'password': req.body.password},{ $inc: { amount: -req.body.amount}}),
+//        Account.update({'login': req.body.destination}, { $inc: { amount: req.body.amount }})
+//    ]).then(function () {
+//       return  Transaction.create({
+//            token: token,
+//            time: Date.now(),
+//            source: req.body.source,
+//            destination: req.body.destination,
+//            amount: req.body.amount
+//        });
+//    })
+//        .then(function () {
+//            res.json({
+//                success: true,
+//                message: message,
+//                token: token
+//            });
+//        })
+//        .catch(function (err) {
+//            console.log(err.stack);
+//            res.send({
+//                success: false,
+//                message: "server err"
+//            });
+//        })
+//});
 
+//app.post('/api/getMoney', function(req, res) {
+//    var token = guid.Guid();
+//
+//    Promise.all([
+//        Account.update({
+//            login: req.body.login, password: req.body.password
+//        }, {$inc: {amount: 500}}),
+//        Transaction.create({
+//            token: token,
+//            time: Date.now(),
+//            source: 'salary',
+//            destination: req.body.login,
+//            amount: 500
+//        })
+//
+//    ]).then(Account.find(function (err, accounts) {
+//            if (err) {
+//                res.send(err);
+//            }
+//            res.json(accounts);
+//    }));
+//});
 
+//app.get('/api/checkOperation', function(req, res)
+//{
+//    Transaction.findOne({
+//        token: req.body.token,
+//        source: req.body.source,
+//        destination: req.body.destination,
+//        amount: req.body.amount
+//    }, function(err, operations){
+//        if(err)
+//        {
+//            res.send(err);
+//        }
+//        res.json({success: true});
+//    })
+//});
 
-    ////
-    Promise.all([
-        Account.update({'login': req.body.source, 'password': req.body.password},{ $inc: { amount: -req.body.amount}}),
-        Account.update({'login': req.body.destination}, { $inc: { amount: req.body.amount }})
-    ]).then(function () {
-       return  Transaction.create({
-            token: token,
-            time: Date.now(),
-            source: req.body.source,
-            destination: req.body.destination,
-            amount: req.body.amount
-        });
-    })
-        .then(function () {
-            res.json({
-                success: true,
-                message: message,
-                token: token
-            });
-        })
-        .catch(function (err) {
-            console.log(err.stack);
-            res.send({
-                success: false,
-                message: "server err"
-            });
-        })
-});
-
-app.post('/api/getMoney', function(req, res) {
-    var token = guid.Guid();
-
-    Promise.all([
-        Account.update({
-            login: req.body.login, password: req.body.password
-        }, {$inc: {amount: 500}}),
-        Transaction.create({
-            token: token,
-            time: Date.now(),
-            source: 'salary',
-            destination: req.body.login,
-            amount: 500
-        })
-
-    ]).then(Account.find(function (err, accounts) {
-            if (err) {
-                res.send(err);
-            }
-            res.json(accounts);
-    }));
-});
-
-app.get('/api/checkOperation', function(req, res)
-{
-    Transaction.findOne({
-        token: req.body.token,
-        source: req.body.source,
-        destination: req.body.destination,
-        amount: req.body.amount
-    }, function(err, operations){
-        if(err)
-        {
-            res.send(err);
-        }
-        res.json({success: true});
-    })
-});
-
-app.post('/api/accounts', function(req, res)
-{
-    Account.create({
-        login : req.body.login,
-        password: req.body.password,
-        amount: 0
-    }, function(err, accounts) {
-        if (err) {
-            res.send(err);
-        }
-        Account.find(function(err, accounts)
-        {
-            if (err)
-            {
-                res.send(err);
-            }
-            res.json(accounts);
-        });
-    });
-});
-
-
+//app.post('/api/accounts', function(req, res)
+//{
+//    Account.create({
+//        login : req.body.login,
+//        password: req.body.password,
+//        amount: 0
+//    }, function(err, accounts) {
+//        if (err) {
+//            res.send(err);
+//        }
+//        Account.find(function(err, accounts)
+//        {
+//            if (err)
+//            {
+//                res.send(err);
+//            }
+//            res.json(accounts);
+//        });
+//    });
+//});
 
 
-app.delete('/api/accounts/:account_id', function(req, res) {
-    Account.remove({
-        _id: req.params.account_id
-    }, function(err, account) {
-        if(err)
-        {
-            res.send(err);
-        }
-        Account.find(function(err, accounts) {
-            if(err)
-            {
-                res.send(err);
-            }
-            res.json(accounts);
-        });
-    });
-});
+
+
+//app.delete('/api/accounts/:account_id', function(req, res) {
+//    Account.remove({
+//        _id: req.params.account_id
+//    }, function(err, account) {
+//        if(err)
+//        {
+//            res.send(err);
+//        }
+//        Account.find(function(err, accounts) {
+//            if(err)
+//            {
+//                res.send(err);
+//            }
+//            res.json(accounts);
+//        });
+//    });
+//});
 
 app.listen(3001);
 console.log("App listening on port 3001");

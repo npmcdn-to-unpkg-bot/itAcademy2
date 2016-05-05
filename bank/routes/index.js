@@ -40,6 +40,18 @@ module.exports = function(passport) {
         });
     });
 
+    router.get('/api/checkBalance', function(req, res)
+    {
+        Account.findOne({ 'login': req.body.login, 'password': req.body.password},
+            function(err, account) {
+                if(err)
+                {
+                    res.send(err);
+                }
+                res.json(account);
+            });
+    })
+
     router.post('/salary', isAuthenticated, function(req,res) {
         var token = guid.Guid();
         var currentAccount = req.account;
@@ -68,7 +80,7 @@ module.exports = function(passport) {
         res.render('transfer', {account: req.account });
     });
 
-    //geting users operation for home page
+    //get users operation for home page
     router.get('/api/operations', isAuthenticated, function(req, res)
     {
         var operations = [];
@@ -78,7 +90,7 @@ module.exports = function(passport) {
         ]);
     });
 
-    router.post('/transfer', isAuthenticated, function(req, res){
+    router.post('/api/transfer', isAuthenticated, function(req, res){
         var token = guid.Guid();
         var currentAccount = req.account;
         Promise.all([
@@ -106,6 +118,85 @@ module.exports = function(passport) {
             });
         })
     });
+
+    router.post('/api/getMoney', function(req, res) {
+        var token = guid.Guid();
+
+        Promise.all([
+            Account.update({
+                login: req.body.login, password: req.body.password
+            }, {$inc: {amount: 500}}),
+            Transaction.create({
+                token: token,
+                time: Date.now(),
+                source: 'salary',
+                destination: req.body.login,
+                amount: 500
+            })
+
+        ]).then(Account.find(function (err, accounts) {
+            if (err) {
+                res.send(err);
+            }
+            res.json(accounts);
+        }));
+    });
+
+    router.get('/api/checkOperation', function(req, res)
+    {
+        Transaction.findOne({
+            token: req.body.token,
+            source: req.body.source,
+            destination: req.body.destination,
+            amount: req.body.amount
+        }, function(err, operations){
+            if(err)
+            {
+                res.send(err);
+            }
+            res.json({success: true});
+        })
+    });
+
+    router.post('/api/accounts', function(req, res)
+    {
+        Account.create({
+            login : req.body.login,
+            password: req.body.password,
+            amount: 0
+        }, function(err, accounts) {
+            if (err) {
+                res.send(err);
+            }
+            Account.find(function(err, accounts)
+            {
+                if (err)
+                {
+                    res.send(err);
+                }
+                res.json(accounts);
+            });
+        });
+    });
+
+    router.delete('/api/accounts/:account_id', function(req, res)
+    {
+        Account.remove({
+            _id: req.params.account_id
+        }, function(err, account) {
+            if(err)
+            {
+                res.send(err);
+            }
+            Account.find(function(err, accounts) {
+                if(err)
+                {
+                    res.send(err);
+                }
+                res.json(accounts);
+            });
+        });
+    })
 
     router.get('/home', isAuthenticated, function(req, res){
         res.render('home', {user: req.account });
