@@ -46,9 +46,17 @@
                   <input placeholder="Search products" id="search" ng-model="sortData.search">
                 </div>
 
-                <div class="input-field col s4 offset-s4">
-                  <select ng-model="sortData.sort" ng-change="sort(sortData.sort)">
-                    <option value="" disabled selected>Choose sorting</option>
+                <div class="input-field col s4">
+                  <select ng-model="sortData.name" ng-change="sort(sortData.name)">
+                    <option value="" disabled selected>Sort by name</option>
+                    <option value="name_desc" ng-selected="">Name: descending</option>
+                    <option value="name_asc" ng-selected="">Name: ascending</option>
+                  </select>
+                </div>
+
+                <div class="input-field col s4">
+                  <select ng-model="sortData.price" ng-change="sort(sortData.price)">
+                    <option value="" disabled selected>Sort by price</option>
                     <option value="price_desc" ng-selected="selectedDesc">Price: descending</option>
                     <option value="price_asc" ng-selected="selectedAsc">Price: ascending</option>
                   </select>
@@ -56,8 +64,8 @@
               </div>
             </div>
 
-            <div class="collection col s9" ng-show="filter">
-              <a ng-click="showAll()">
+            <div class="collection col s9" ng-show="filterState">
+              <a ng-click="deleteCategory(filter)" ng-repeat="filter in filterList">
                 <div class="chip">
                   {{filter}}
                   <i class="material-icons">close</i>

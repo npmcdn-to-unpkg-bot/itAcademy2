@@ -120,23 +120,32 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store = $cookies.getObject('store');
   $scope.user = $cookies.getObject('user');
 
-  var filter = $scope.filter = $stateParams.filter;
-  var sort = $scope.sort = $stateParams.sort;
+  $scope.store._id = $stateParams.storeId;
+  $scope.sortOption = $stateParams.sort;
 
-  if (sort === 'price_desc') {
+  if (_.isUndefined($stateParams.filter)) {
+    $scope.filterList = [];
+  } else if (_.isString($stateParams.filter)) {
+    $scope.filterList = [$stateParams.filter];
+  } else if (_.isObject($stateParams.filter)) {
+    $scope.filterList = _.toArray($stateParams.filter);
+  };
+
+  $scope.filterState = $scope.filterList.length > 0;
+
+  if ($scope.sortOption === 'price_desc') {
     $scope.selectedDesc = true;
-  } else if (sort === 'price_asc') {
+  } else if ($scope.sortOption === 'price_asc') {
     $scope.selectedAsc = true;
   }
 
   $scope.sort = function(sortOption) {
-    var url = 'api/store/?storeId=' + $scope.store._id + '&sort=' + sortOption;
-
-    if (filter) {
-      url = url + '&category=' + filter;
-    }
-
-    $http.get(url)
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id,
+        category: $scope.filterList,
+        sort: sortOption
+    }})
     .then(function(res){
       if (res.data.error)
         return console.log(res.data.error);
@@ -163,18 +172,44 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   // Start of Filtering section
   $scope.filterByCategory = function (category) {
-    var url = 'api/store/?storeId='+ $scope.store._id + '&category=' + category;
+    _.isUndefined($stateParams.filter) ? $scope.filterList = [category] : $scope.filterList = _.flatten(_.toArray([$stateParams.filter, category]));
 
-    if (sort) {
-      url = url + '&sort=' + sort;
-    }
+    $scope.filterList = _.uniq($scope.filterList);
 
-    $http.get(url)
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id,
+        category: $scope.filterList,
+        sort: $scope.sortOption
+    }})
 		.then(function(res){
       dataTransfer.setProducts(res.data.products);
       $scope.products = res.data.products;
 
-      $state.go('store', {storeId: $scope.store._id, filter: category, sort: sort}, {location: true});
+      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption}, {location: true});
+		}, function(err){
+      console.log(err);
+		});
+  };
+
+  $scope.deleteCategory = function (category) {
+    $scope.filterList = _.without($scope.filterList, category)
+
+    if ($scope.filterList.length === 0) {
+      delete $scope.filterList;
+    };
+
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id,
+        category: $scope.filterList,
+        sort: $scope.sortOption
+    }})
+		.then(function(res){
+      dataTransfer.setProducts(res.data.products);
+      $scope.products = res.data.products;
+
+      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption}, {location: true});
 		}, function(err){
       console.log(err);
 		});
@@ -182,23 +217,19 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   $scope.showAll = function() {
     dataTransfer.setProducts([]);
-    $state.go('store', {storeId: $scope.store._id}, {reload: true, inherit: false});
+    $state.go('store', {storeId: $scope.store._id}, {inherit: false});
   };
   // End of filtering section
 
   // START of populate data for the main page
   var getProducts = function(){
-    var url = 'api/store/?storeId=' + $scope.store._id;
 
-    if (filter && sort) {
-      url += '&category=' + filter + '&sort=' + sort;
-    } else if (filter) {
-      url += '&category=' + filter;
-    } else if (sort) {
-      url += '&sort=' + sort;
-    }
-
-    $http.get(url)
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id,
+        category: $scope.filterList,
+        sort: $scope.sortOption
+    }})
     .then(function(res){
       if (res.data.error)
         return console.log(res.data.error);
@@ -213,7 +244,10 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   var getCategories = function(){
 
-    $http.get('api/store/?storeId=' + $scope.store._id)
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id
+    }})
     .then(function(res){
       if (res.data.error)
         return console.log(res.data.error);
@@ -289,13 +323,16 @@ storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$sta
 
   var getCategories = function(){
 
-    $http.get('api/store/' + $scope.store._id)
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id
+    }})
     .then(function(res){
       if (res.data.error)
         return console.log(res.data.error);
 
-      $scope.categories = res.data[1];
-      dataTransfer.setCategories(res.data[1]);
+      $scope.categories = res.data.categories;
+      dataTransfer.setCategories(res.data.categories);
     }, function(err){
       console.log(err);
     });

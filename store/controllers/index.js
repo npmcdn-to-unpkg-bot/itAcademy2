@@ -28,7 +28,7 @@ module.exports.set = function(app) {
 	// created itemsToSend in order to form and populate array of products for the store
 	app.get('/api/store/*', function (req, res) {
 		var storeId = req.query.storeId;
-		var category = req.query.category;
+		var categories = req.query.category || [];
 		var storeItems = [];
 		var sortOption = req.query.sort;
 		var sortQuery;
@@ -48,8 +48,8 @@ module.exports.set = function(app) {
 
 			var filter = {'_id': {$in: storeItemsIds}};
 
-			if (category) {
-				_.extend(filter, {'category': category})
+			if (categories.length > 0) {
+				_.extend(filter, {'category': {$in: categories}})
 			}
 			return Item.find(filter).lean();
 		})
@@ -63,7 +63,7 @@ module.exports.set = function(app) {
 				return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
 			})
 
-			if (category) {
+			if (categories.length > 0) {
 				result.products = _.filter(result.products, (item) => {
 					return _.has(item, 'category');
 				});
