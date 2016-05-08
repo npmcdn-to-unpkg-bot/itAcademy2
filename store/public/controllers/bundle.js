@@ -123,6 +123,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store._id = $stateParams.storeId;
   $scope.sortOption = $stateParams.sort;
 
+  // setting proper Filters array
   if (_.isUndefined($stateParams.filter)) {
     $scope.filterList = [];
   } else if (_.isString($stateParams.filter)) {
@@ -131,16 +132,24 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $scope.filterList = _.toArray($stateParams.filter);
   };
 
+
   $scope.filterState = $scope.filterList.length > 0;
 
+  // setting SELECT options to sorting value
   if ($scope.sortOption === 'price_desc') {
-    $scope.selectedDesc = true;
+    $scope.selectedPriceDesc = true;
   } else if ($scope.sortOption === 'price_asc') {
-    $scope.selectedAsc = true;
-  }
+    $scope.selectedPriceAsc = true;
+  };
+
+  if ($scope.sortOption === 'name_desc') {
+    $scope.selectedNameDesc = true;
+  } else if ($scope.sortOption === 'name_asc') {
+    $scope.selectedNameAsc = true;
+  };
 
   $scope.sort = function(sortOption) {
-    $http.get('api/store/', {
+     $http.get('api/store/', {
       params: {
         storeId: $scope.store._id,
         category: $scope.filterList,
@@ -172,6 +181,8 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   // Start of Filtering section
   $scope.filterByCategory = function (category) {
+
+    //stateParams returns 'string' in case of 1 parameter and 'object' in case of many parameters
     _.isUndefined($stateParams.filter) ? $scope.filterList = [category] : $scope.filterList = _.flatten(_.toArray([$stateParams.filter, category]));
 
     $scope.filterList = _.uniq($scope.filterList);

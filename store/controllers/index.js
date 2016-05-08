@@ -29,17 +29,23 @@ module.exports.set = function(app) {
 	app.get('/api/store/*', function (req, res) {
 		var storeId = req.query.storeId;
 		var categories = req.query.category || [];
-		var storeItems = [];
 		var sortOption = req.query.sort;
-		var sortQuery;
+		var storeItems = [];
+		var sortPrice = {};
+		var sortTitle = {};
 
-		if (sortOption === 'price_desc') {
-			sortQuery = {price: -1};
-		} else if (sortOption === 'price_asc') {
-			sortQuery = {price: 1};
-		};
+		// setting sorting options
+		if (sortOption ==='price_desc') {
+	    _.extend(sortPrice, {price: -1});
+	  } else if (sortOption === 'price_asc') {
+	    _.extend(sortPrice, {price: 1});
+	  } else if (sortOption === 'name_desc') {
+	    _.extend(sortTitle, {title: -1});
+	  } else if (sortOption === 'name_asc') {
+	    _.extend(sortTitle, {title: 1});
+	  }
 
-		ItemSet.find({storeId: storeId}).sort(sortQuery).lean()
+		ItemSet.find({storeId: storeId}).sort(sortPrice).lean()
 		.then(function(data) {
 			storeItems = data;
 			var storeItemsIds = _.map(storeItems, function(storeItem) {
@@ -50,18 +56,28 @@ module.exports.set = function(app) {
 
 			if (categories.length > 0) {
 				_.extend(filter, {'category': {$in: categories}})
-			}
-			return Item.find(filter).lean();
+			};
+
+			return Item.find(filter).sort(sortTitle).lean();
 		})
 		.then(function(items) {
 			var result = {};
 
-			result.products = _.map(storeItems, (storeItem) => {
-				var item = _.find(items, (item) => {
-					return storeItem.itemId.toString() === item._id.toString()
+			if (!_.isEmpty(sortTitle)) {
+				result.products = _.map(items, (item) => {
+					var storeItem = _.find(storeItems, (storeItem) => {
+						return storeItem.itemId.toString() === item._id.toString()
+					});
+					return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
 				});
-				return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
-			})
+			} else {
+				result.products = _.map(storeItems, (storeItem) => {
+					var item = _.find(items, (item) => {
+						return storeItem.itemId.toString() === item._id.toString()
+					});
+					return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
+				})
+			}
 
 			if (categories.length > 0) {
 				result.products = _.filter(result.products, (item) => {

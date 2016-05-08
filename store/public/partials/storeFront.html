@@ -49,16 +49,16 @@
                 <div class="input-field col s4">
                   <select ng-model="sortData.name" ng-change="sort(sortData.name)">
                     <option value="" disabled selected>Sort by name</option>
-                    <option value="name_desc" ng-selected="">Name: descending</option>
-                    <option value="name_asc" ng-selected="">Name: ascending</option>
+                    <option value="name_desc" ng-selected="selectedNameDesc">Name: descending</option>
+                    <option value="name_asc" ng-selected="selectedNameAsc">Name: ascending</option>
                   </select>
                 </div>
 
                 <div class="input-field col s4">
                   <select ng-model="sortData.price" ng-change="sort(sortData.price)">
                     <option value="" disabled selected>Sort by price</option>
-                    <option value="price_desc" ng-selected="selectedDesc">Price: descending</option>
-                    <option value="price_asc" ng-selected="selectedAsc">Price: ascending</option>
+                    <option value="price_desc" ng-selected="selectedPriceDesc">Price: descending</option>
+                    <option value="price_asc" ng-selected="selectedPriceAsc">Price: ascending</option>
                   </select>
                 </div>
               </div>
