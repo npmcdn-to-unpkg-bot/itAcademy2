@@ -28,18 +28,26 @@ module.exports.set = function(app) {
 	// created itemsToSend in order to form and populate array of products for the store
 	app.get('/api/store/*', function (req, res) {
 		var storeId = req.query.storeId;
-		var category = req.query.category;
-		var storeItems = [];
+		var categories = req.query.category || [];
 		var sortOption = req.query.sort;
-		var sortQuery;
+		var search = req.query.search;
+		var storeItems = [];
+		var sortPrice = {};
+		var sortTitle = {};
 
-		if (sortOption === 'price_desc') {
-			sortQuery = {price: -1};
-		} else if (sortOption === 'price_asc') {
-			sortQuery = {price: 1};
-		};
 
-		ItemSet.find({storeId: storeId}).sort(sortQuery).lean()
+		// setting sorting options
+		if (sortOption ==='price_desc') {
+	    _.extend(sortPrice, {price: -1});
+	  } else if (sortOption === 'price_asc') {
+	    _.extend(sortPrice, {price: 1});
+	  } else if (sortOption === 'name_desc') {
+	    _.extend(sortTitle, {title: -1});
+	  } else if (sortOption === 'name_asc') {
+	    _.extend(sortTitle, {title: 1});
+	  }
+
+		ItemSet.find({storeId: storeId}).sort(sortPrice).lean()
 		.then(function(data) {
 			storeItems = data;
 			var storeItemsIds = _.map(storeItems, function(storeItem) {
@@ -48,22 +56,37 @@ module.exports.set = function(app) {
 
 			var filter = {'_id': {$in: storeItemsIds}};
 
-			if (category) {
-				_.extend(filter, {'category': category})
+			if (categories.length > 0) {
+				_.extend(filter, {'category': {$in: categories}})
+			};
+
+			if (search) {
+				_.extend(filter, {$text: {$search: search}});
 			}
-			return Item.find(filter).lean();
+
+			return Item.find(filter).sort(sortTitle).lean();
 		})
 		.then(function(items) {
 			var result = {};
 
-			result.products = _.map(storeItems, (storeItem) => {
-				var item = _.find(items, (item) => {
-					return storeItem.itemId.toString() === item._id.toString()
+			// depending on sortTitle and search we should map items from Items and ItemSet differently
+			if (!_.isEmpty(sortTitle) || search) {
+				result.products = _.map(items, (item) => {
+					var storeItem = _.find(storeItems, (storeItem) => {
+						return storeItem.itemId.toString() === item._id.toString()
+					});
+					return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
 				});
-				return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
-			})
+			} else {
+				result.products = _.map(storeItems, (storeItem) => {
+					var item = _.find(items, (item) => {
+						return storeItem.itemId.toString() === item._id.toString()
+					});
+					return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
+				})
+			}
 
-			if (category) {
+			if (categories.length > 0) {
 				result.products = _.filter(result.products, (item) => {
 					return _.has(item, 'category');
 				});
