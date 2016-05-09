@@ -43,31 +43,21 @@
 
     <div class="container">
         <div class="jumbotron text-center">
-            <h1>Welcome to bank <span class="label label-info">{{accounts.length}}</span></h1>
-        </div>
-
-        <div id="todo-list" class="row">
-            <div class="col-sm-4 col-sm-offset-4">
-                <div class="checkbox" ng-repeat="account in accounts">
-                    <label>
-                        <input type="checkbox" ng-click="deleteAccount(account._id)"> {{account.login}}
-                    </label>
-                </div>
-            </div>
+            <h1>Become our <span class="label label-info">{{accounts.length}}</span> client!</h1>
         </div>
 
         <div id="account-form" class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
-                <form class="form-signin" action="/login" method="post">
+                <form class="form-signin" ng-submit="createAccount(formData)">
                     <div class="form-group">
 
                         <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.login">
                         <input type="password" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
                 </form>
-                <a href="/signup" class="text-center new-account">Create an account</a>
+                <a href="/login" class="text-center new-account">Log in</a>
             </div>
         </div>
     </div>
