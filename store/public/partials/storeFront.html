@@ -43,7 +43,9 @@
             <div class="sort collection col s9">
               <div class="row">
                 <div class="input-field col s4">
-                  <input placeholder="Search products" id="search" ng-model="sortData.search">
+                  <form ng-submit="search(sortData.search)">
+                    <input placeholder="Search products" id="search" ng-model="sortData.search">
+                  </form>
                 </div>
 
                 <div class="input-field col s4">
@@ -64,13 +66,20 @@
               </div>
             </div>
 
-            <div class="collection col s9" ng-show="filterState">
+            <div class="collection col s9" ng-show="filterList.length > 0 || searchWords">
               <a ng-click="deleteCategory(filter)" ng-repeat="filter in filterList">
                 <div class="chip">
                   {{filter}}
                   <i class="material-icons">close</i>
                 </div>
               </a>
+              <a ng-click="deleteSearch()" ng-show="searchWords">
+                <div class="chip">
+                  {{searchWords}}
+                  <i class="material-icons">close</i>
+                </div>
+              </a>
+
             </div>
 
             <div class="products col s9">

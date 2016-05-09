@@ -23,4 +23,6 @@ itemSchema.add({
   }
 });
 
+itemSchema.index({title: 'text'});
+
 module.exports = mongoose.model('Item', itemSchema, 'items');

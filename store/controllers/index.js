@@ -30,9 +30,11 @@ module.exports.set = function(app) {
 		var storeId = req.query.storeId;
 		var categories = req.query.category || [];
 		var sortOption = req.query.sort;
+		var search = req.query.search;
 		var storeItems = [];
 		var sortPrice = {};
 		var sortTitle = {};
+
 
 		// setting sorting options
 		if (sortOption ==='price_desc') {
@@ -58,12 +60,17 @@ module.exports.set = function(app) {
 				_.extend(filter, {'category': {$in: categories}})
 			};
 
+			if (search) {
+				_.extend(filter, {$text: {$search: search}});
+			}
+
 			return Item.find(filter).sort(sortTitle).lean();
 		})
 		.then(function(items) {
 			var result = {};
 
-			if (!_.isEmpty(sortTitle)) {
+			// depending on sortTitle and search we should map items from Items and ItemSet differently
+			if (!_.isEmpty(sortTitle) || search) {
 				result.products = _.map(items, (item) => {
 					var storeItem = _.find(storeItems, (storeItem) => {
 						return storeItem.itemId.toString() === item._id.toString()
