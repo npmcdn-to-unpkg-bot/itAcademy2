@@ -19,15 +19,17 @@ var isAuthenticated = function (req, res, next) {
 
 module.exports = function(passport) {
 
-    router.get('/', function(req, res) {
-        res.render('index', {message: req.flash('message') });
+    router.post('/api/login', function (req, res)
+    {
+        Account.findOne({ 'login': req.body.login, 'password': req.body.password},
+        function(err, account) {
+            if(err)
+            {
+                res.send(err);
+            }
+            res.json(account);
+        });
     });
-
-    router.post('/login', passport.authenticate('login', {
-        successRedirect: '/home',
-        failureRedirect: '/',
-        failureFlash: true
-    }));
 
     router.get('/api/accounts', function(req, res)
     {
@@ -76,7 +78,7 @@ module.exports = function(passport) {
         failureFlash: true
     }));
 
-    router.get('/transfer', isAuthenticated, function(req, res){
+    router.get('/api/transfer', isAuthenticated, function(req, res){
         res.render('transfer', {account: req.account });
     });
 
@@ -198,13 +200,18 @@ module.exports = function(passport) {
         });
     })
 
-    router.get('/home', isAuthenticated, function(req, res){
-        res.render('home', {user: req.account });
-    });
+    //router.get('/home', isAuthenticated, function(req, res){
+    //    res.render('home', {user: req.account });
+    //});
+    //
+    //router.get('/signout', function(req, res) {
+    //    req.logout();
+    //    res.redirect('/');
+    //});
 
-    router.get('/signout', function(req, res) {
-        req.logout();
-        res.redirect('/');
+    router.all('*', function(req, res, next) {
+        // Just send the index.html for other files to support HTML5Mode
+        res.sendFile('index.html', { root:  __dirname + '/../public' });
     });
 
     return router;
