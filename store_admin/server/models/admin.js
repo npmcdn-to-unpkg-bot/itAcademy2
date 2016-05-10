@@ -12,7 +12,8 @@ var Admin = new Schema({
     class: {
         type: String,
         enum: role
-    }
+    },
+    account: Number
 });
 
 userSchema.methods.validPassword = function(pwd) {
