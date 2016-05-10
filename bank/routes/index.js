@@ -68,6 +68,8 @@ module.exports = function(passport) {
         });
     });
 
+
+
     router.get('/signup', function(req, res){
         res.render('signup',{message: req.flash('message')});
     });
@@ -98,6 +100,34 @@ module.exports = function(passport) {
         Promise.all([
             Account.update({'login': currentAccount.login, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
             Account.update({'login': req.body.destination}, { $inc: {mount: req.body.amount}})
+        ]).then(function() {
+            return Transaction.create({
+                token: token,
+                time: Date.now(),
+                source: req.body.source,
+                destination: req.body.destination,
+                amount: req.body.amount
+            });
+        }).then(function () {
+            res.json({
+                success: true,
+                message: "good",
+                token: token
+            });
+        }).catch(function (err) {
+            console.log(err.stack);
+            res.send({
+                success: false,
+                message: "server err"
+            });
+        })
+    });
+
+    router.post('/transfer', isAuthenticated, function(req, res){
+        var token = guid.Guid();
+        Promise.all([
+            Account.update({'_id': req.body.source, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
+            Account.update({'_id': req.body.destination}, { $inc: {mount: req.body.amount}})
         ]).then(function() {
             return Transaction.create({
                 token: token,
