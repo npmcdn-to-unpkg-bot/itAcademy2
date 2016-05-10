@@ -3,10 +3,11 @@
  */
 var express = require('express');
 var app = express();
+var path = require('path');
 var mongoose = require('mongoose');
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-    var methodOverride = require('method-override');
+var methodOverride = require('method-override');
 var guid = require('./guidGenerator');
 var Promise = require('bluebird');
 mongoose.connect('mongodb://elifuser:qwerty12@ds015710.mlab.com:15710/elifbankdb');
@@ -17,6 +18,8 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 app.use(methodOverride());
+
+app.set('public', path.join(__dirname, 'public'));
 
 var Account = require('./models/account.js');
 

@@ -1,0 +1,18 @@
+<div class="jumbotron text-center">
+    <h1>Hello {{user.login}}!</h1>
+</div>
+
+<div id="account-form" class="row">
+    <div class="col-sm-8 col-sm-offset-2 text-center">
+        <form class="form-signin" action="/signup" method="post">
+            <div class="form-group">
+
+                <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.login">
+                <input type="password" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+        </form>
+        <a href="/index" class="text-center new-account">Sign in</a>
+    </div>
+</div>
