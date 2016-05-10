@@ -68,7 +68,5 @@ angular.module('myApp').controller('registerController',
           $scope.disabled = false;
           $scope.registerForm = {};
         });
-
     };
-
 }]);
