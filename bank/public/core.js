@@ -4,6 +4,10 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', funct
     $scope.formData = {};
 
 
+    $http.get('/home').success(function(data) {
+        $scope.user = user;
+    });
+
     $http.get('/api/accounts')
         .success(function(data) {
             $scope.accounts = data;
@@ -63,6 +67,8 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', funct
                 console.log('Error: ' + data);
             });
     };
+
+
 
     $scope.getMoney = function() {
         $http.post('/api/getMoney', $scope.formData)

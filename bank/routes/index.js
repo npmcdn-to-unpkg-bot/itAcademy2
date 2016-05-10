@@ -42,7 +42,7 @@ module.exports = function(passport) {
         });
     });
 
-    router.get('/api/checkBalance', function(req, res)
+    router.post('/api/checkBalance', function(req, res)
     {
         Account.findOne({ 'login': req.body.login, 'password': req.body.password},
             function(err, account) {
@@ -123,7 +123,7 @@ module.exports = function(passport) {
         })
     });
 
-    router.post('/transfer', isAuthenticated, function(req, res){
+    router.post('/transfer', function(req, res){
         var token = guid.Guid();
         Promise.all([
             Account.update({'_id': req.body.source, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
@@ -230,9 +230,9 @@ module.exports = function(passport) {
         });
     })
 
-    //router.get('/home', isAuthenticated, function(req, res){
-    //    res.render('home', {user: req.account });
-    //});
+    router.get('/home', isAuthenticated, function(req, res){
+        res.render('home', {user: req.account });
+    });
     //
     //router.get('/signout', function(req, res) {
     //    req.logout();
