@@ -35,7 +35,6 @@ module.exports.set = function(app) {
 		var sortPrice = {};
 		var sortTitle = {};
 
-
 		// setting sorting options
 		if (sortOption ==='price_desc') {
 	    _.extend(sortPrice, {price: -1});
@@ -86,6 +85,7 @@ module.exports.set = function(app) {
 				})
 			}
 
+			// selecting items that has categories field
 			if (categories.length > 0) {
 				result.products = _.filter(result.products, (item) => {
 					return _.has(item, 'category');

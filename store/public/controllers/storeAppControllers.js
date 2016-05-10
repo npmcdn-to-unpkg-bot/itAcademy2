@@ -30,6 +30,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store._id = $stateParams.storeId;
   $scope.sortOption = $stateParams.sort;
   $scope.searchWords = $stateParams.search;
+  $scope.page = $stateParams.page || 1;
 
   // setting proper Filters array
   if (_.isUndefined($stateParams.filter)) {
@@ -38,9 +39,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $scope.filterList = [$stateParams.filter];
   } else if (_.isObject($stateParams.filter)) {
     $scope.filterList = _.toArray($stateParams.filter);
-  }
-
-  // $scope.filterState = $scope.filterList.length > 0;
+  };
 
   // START of filtering and SEARCH part
   // setting SELECT options to sorting value
@@ -112,7 +111,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     });
   }
   //END of filtering and SEARCH part
-  
+
   $scope.logout = function () {
     $http.get('/api/logout')
     .then(function() {
@@ -189,7 +188,8 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
         storeId: $scope.store._id,
         category: $scope.filterList,
         sort: $scope.sortOption,
-        search: $scope.searchWords
+        search: $scope.searchWords,
+        page: $scope.page
     }})
     .then(function(res){
       if (res.data.error)
@@ -197,6 +197,9 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
       $scope.products = res.data.products;
       $scope.categories = res.data.categories;
+      console.log(res.data.numOfItems);
+
+      dataTransfer.setNumOfItems(res.data.numOfItems);
       dataTransfer.setCategories(res.data.categories);
     }, function(err){
       console.log(err);
@@ -233,6 +236,29 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $cookies.putObject('user', $scope.user);
   }
 
+  $scope.goToPage = function(page) {
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id,
+        category: $scope.filterList,
+        sort: $scope.sortOption,
+        search: $scope.searchWords,
+        page: $scope.page
+    }})
+    .then(function(res){
+      if (res.data.error)
+        return console.log(res.data.error);
+
+      $scope.products = res.data.products;
+      $scope.categories = res.data.categories;
+
+      dataTransfer.setCategories(res.data.categories);
+    }, function(err){
+      console.log(err);
+    });
+  };
+
+  //$scope.pages = dataTransfer.getNumOfItems()/3;
   dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
   dataTransfer.getProducts().length > 0 ? $scope.products = dataTransfer.getProducts() : getProducts();
 }]);

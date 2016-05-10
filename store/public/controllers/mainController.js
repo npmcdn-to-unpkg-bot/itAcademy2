@@ -6,7 +6,7 @@ var storeAppControllers = require('./storeAppControllers');
         .factory('dataTransfer', function() {
           var products = [];
           var categories = [];
-          var filter;
+          var numOfItems;
           var item;
 
           return {
@@ -22,11 +22,11 @@ var storeAppControllers = require('./storeAppControllers');
             getCategories: function () {
               return categories;
             },
-            setFilter: function (data) {
-              filter = data;
+            setNumOfItems: function (data) {
+              numOfItems = data;
             },
-            getFilter: function () {
-              return filter;
+            getNumOfItems: function () {
+              return numOfItems;
             },
             setItem: function (data) {
               item = data;
@@ -49,7 +49,7 @@ var storeAppControllers = require('./storeAppControllers');
             controller: 'StoreCtrl'
           }).
           state('store', {
-            url: '/store/?storeId&sort&filter&search',
+            url: '/store/?storeId&sort&filter&search&page',
             templateUrl: 'partials/storeFront.html',
             controller: 'StoreFrontCtrl'
           }).

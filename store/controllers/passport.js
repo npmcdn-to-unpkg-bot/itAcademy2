@@ -27,7 +27,6 @@ module.exports = function(app) {
     usernameField: 'email',
     passwordField: 'password'
   }, function (username, password, done) {
-
     User.findOne({email: username}, function (err, user) {
 
       if (err) {
@@ -42,7 +41,7 @@ module.exports = function(app) {
       return done(null, user);
     });
   }
-));
+  ));
 
   passport.serializeUser(function(user, done) {
     done(null, user.id);
@@ -50,10 +49,10 @@ module.exports = function(app) {
 
   passport.deserializeUser(function(id, done) {
     User.findById(id, function(err, user) {
+      console.log(user);
       done(err, user);
     });
   });
-
 
   app.post('/api/login_user', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
