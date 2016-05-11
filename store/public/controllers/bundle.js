@@ -123,6 +123,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store._id = $stateParams.storeId;
   $scope.sortOption = $stateParams.sort;
   $scope.searchWords = $stateParams.search;
+  $scope.page = $stateParams.page || 1;
 
   // setting proper Filters array
   if (_.isUndefined($stateParams.filter)) {
@@ -287,10 +288,8 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
       if (res.data.error)
         return console.log(res.data.error);
 
+      $scope.numOfPages = _.range(1, res.data.numOfPages + 1);
       $scope.products = res.data.products;
-      $scope.categories = res.data.categories;
-
-      dataTransfer.setCategories(res.data.categories);
     }, function(err){
       console.log(err);
     });
@@ -298,7 +297,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   var getCategories = function(){
 
-    $http.get('api/store/', {
+    $http.get('api/getStoreCategories', {
       params: {
         storeId: $scope.store._id
     }})
@@ -306,8 +305,8 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
       if (res.data.error)
         return console.log(res.data.error);
 
-      $scope.categories = res.data.categories;
-      dataTransfer.setCategories(res.data.categories);
+      $scope.categories = res.data;
+      dataTransfer.setCategories(res.data);
     }, function(err){
       console.log(err);
     });
@@ -326,6 +325,9 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $cookies.putObject('user', $scope.user);
   };
 
+  $scope.goToPage = function (page) {
+    $state.go('store', {page: page});
+  }
   dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
   dataTransfer.getProducts().length > 0 ? $scope.products = dataTransfer.getProducts() : getProducts();
 }]);
@@ -377,7 +379,7 @@ storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$sta
 
   var getCategories = function(){
 
-    $http.get('api/store/', {
+    $http.get('api/getStoreCategories', {
       params: {
         storeId: $scope.store._id
     }})
@@ -385,8 +387,8 @@ storeAppControllers.controller('ItemCtrl', ['$scope', '$http', '$cookies', '$sta
       if (res.data.error)
         return console.log(res.data.error);
 
-      $scope.categories = res.data.categories;
-      dataTransfer.setCategories(res.data.categories);
+      $scope.categories = res.data;
+      dataTransfer.setCategories(res.data);
     }, function(err){
       console.log(err);
     });
