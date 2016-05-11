@@ -1,4 +1,4 @@
-  (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var storeAppControllers = require('./storeAppControllers');
 
 (function() {
@@ -123,7 +123,6 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store._id = $stateParams.storeId;
   $scope.sortOption = $stateParams.sort;
   $scope.searchWords = $stateParams.search;
-  $scope.page = $stateParams.page || 1;
 
   // setting proper Filters array
   if (_.isUndefined($stateParams.filter)) {
@@ -290,9 +289,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
       $scope.products = res.data.products;
       $scope.categories = res.data.categories;
-      console.log(res.data.numOfItems);
 
-      dataTransfer.setNumOfItems(res.data.numOfItems);
       dataTransfer.setCategories(res.data.categories);
     }, function(err){
       console.log(err);
@@ -327,31 +324,8 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     $scope.user = $cookies.getObject('user');
     $scope.user.cart.push(item);
     $cookies.putObject('user', $scope.user);
-  }
-
-  $scope.goToPage = function(page) {
-    $http.get('api/store/', {
-      params: {
-        storeId: $scope.store._id,
-        category: $scope.filterList,
-        sort: $scope.sortOption,
-        search: $scope.searchWords,
-        page: $scope.page
-    }})
-    .then(function(res){
-      if (res.data.error)
-        return console.log(res.data.error);
-
-      $scope.products = res.data.products;
-      $scope.categories = res.data.categories;
-
-      dataTransfer.setCategories(res.data.categories);
-    }, function(err){
-      console.log(err);
-    });
   };
 
-  //$scope.pages = dataTransfer.getNumOfItems()/3;
   dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
   dataTransfer.getProducts().length > 0 ? $scope.products = dataTransfer.getProducts() : getProducts();
 }]);
@@ -471,7 +445,7 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
 
   $scope.purchaseItems = function () {
     var purchaseInfo = {
-      user: $scope.user,
+      userCart: $scope.user.cart,
       store: $scope.store,
       totalPrice: $scope.totalPrice
     }
@@ -484,30 +458,6 @@ storeAppControllers.controller('CartCtrl', ['$scope', '$http', '$cookies', '$sta
     }, function (err) {
       console.log(err);
     });
-    /* var transactionDetails = {
-      source: $scope.user.email,
-      password: $scope.user.password,
-      destination: $scope.store.email,
-      amount: $scope.totalPrice
-    };
-
-    $http.post('http://localhost:3001/api/transfer', transactionDetails)
-    .then(function(res){
-      if (res.data.success) {
-        transactionDetails.token = res.data.token;
-        transactionDetails.items = $scope.user.cart;
-
-        $scope.user.cart = [];
-        $cookies.putObject('user', $scope.user);
-        $state.go('store', {id: $scope.store._id}, {reload: true});
-      } else {
-        console.log(err);
-      }
-
-    }, function(err){
-      console.log(err);
-    });
-  */
   }
 
 }]);
@@ -539,6 +489,7 @@ storeAppControllers.controller('ProfileCtrl', ['$scope', '$http', '$cookies', '$
   $scope.getMoney = function (){
     $http.post('http://localhost:3001/api/getMoney', bankUser)
     .then(function(res){
+      console.log(res);
       checkBalance();
 
     }, function(err){

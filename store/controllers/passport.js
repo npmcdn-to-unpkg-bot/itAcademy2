@@ -1,5 +1,6 @@
 var config = require('../config');
 var request = require('request');
+var flash = require('connect-flash');
 
 var passport = require('passport');
 var mongoose = require('mongoose');
@@ -22,6 +23,8 @@ module.exports = function(app) {
   }));
 
   app.use(passport.initialize());
+
+  app.use(passport.session());
 
   passport.use(new LocalStrategy({
     usernameField: 'email',
@@ -53,6 +56,11 @@ module.exports = function(app) {
       done(err, user);
     });
   });
+
+  var isAuthenticated = function(req,res,next){
+        if(req.isAuthenticated())return next();
+         res.send(401);
+    }
 
   app.post('/api/login_user', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {

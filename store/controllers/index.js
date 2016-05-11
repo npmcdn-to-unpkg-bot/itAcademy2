@@ -128,13 +128,13 @@ module.exports.set = function(app) {
 	})
 
 	app.post('/api/makePurchase', function (req, res) {
-		var cartIds = _.map(req.body.user.cart, function(item) {
+		var cartIds = _.map(req.body.userCart, function(item) {
 			return item.itemId;
 		});
 
-		var cartItems = req.body.user.cart;
+		var cartItems = req.body.userCart;
 
-		ItemSet.find({'itemId': {$in: cartIds}, 'storeId': req.body.store._id}).lean()
+		ItemSet.find({'itemId': {$in: cartIds}, 'storeId': req.user.storeId}).lean()
 		.then(function(items) {
 			var result = _.map(items, (item) => {
 				var cartItem = _.find(cartItems, (cartItem) => {
@@ -155,8 +155,8 @@ module.exports.set = function(app) {
 			if (bankTransaction.success) {
 				var transaction = {
 					token: bankTransaction.token,
-					accountFrom: req.body.user.email,
-					accountTo: req.body.store.email,
+					accountFrom: req.user.email,
+					accountTo: req.store.email,
 					amount: req.body.totalPrice
 				};
 				return Transaction.create(transaction)
@@ -170,7 +170,7 @@ module.exports.set = function(app) {
 			return Order.create({
 				date: Date.now(),
 				itemSet: orderSet,
-				user: req.body.user.email,
+				user: req.user.email,
 				transactionId: transaction._id
 			})
 		})
@@ -189,8 +189,8 @@ module.exports.set = function(app) {
 		        method: 'POST',
 		        uri: 'http://localhost:3001/api/transfer',
 		        form: {
-		          source: req.body.user.email,
-		          password: req.body.user.password,
+		          source: req.user.email,
+		          password: req.user.password,
 							destination: req.body.store.email,
 							amount: req.body.totalPrice
 		        }
@@ -211,7 +211,7 @@ module.exports.set = function(app) {
 		var userOrders = [];
 
 
-		Order.find(query).lean()
+		Order.find(query).sort({date: 'desc'}).lean()
 		.then(function(orders) {
 			var ordersClean = _.map(orders, function(order) {
 				return _.pick(order, 'itemSet', 'date', '_id')
