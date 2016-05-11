@@ -5,7 +5,7 @@ var passportLocalMongoose = require('passport-local-mongoose');
 
 
 var Store = new Schema({
-    username: String,
+    name: String,
     password: String,
     email: String,
     account: Number

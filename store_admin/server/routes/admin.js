@@ -63,7 +63,7 @@ module.exports = function(app) {
         request({
             header: {'content-type' : 'application/x-www-form-urlencoded'},
             method: 'POST',
-            url: 'http://localhost:3001/api/accounts',
+            uri: 'http://localhost:3001/api/accounts',
             form: {
                 login: admin.email,
                 password: admin.password
