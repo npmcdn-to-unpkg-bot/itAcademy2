@@ -42,7 +42,6 @@ module.exports = function(passport) {
         });
     });
 
-    // changed method to POST to send user data
     router.post('/api/checkBalance', function(req, res)
     {
         Account.findOne({ 'login': req.body.login, 'password': req.body.password},
@@ -68,6 +67,8 @@ module.exports = function(passport) {
             console.log('tip2');
         });
     });
+
+
 
     router.get('/signup', function(req, res){
         res.render('signup',{message: req.flash('message')});
@@ -100,6 +101,34 @@ module.exports = function(passport) {
         Promise.all([
             Account.update({'login': req.body.source, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
             Account.update({'login': req.body.destination}, { $inc: {mount: req.body.amount}})
+        ]).then(function() {
+            return Transaction.create({
+                token: token,
+                time: Date.now(),
+                source: req.body.source,
+                destination: req.body.destination,
+                amount: req.body.amount
+            });
+        }).then(function () {
+            res.json({
+                success: true,
+                message: "good",
+                token: token
+            });
+        }).catch(function (err) {
+            console.log(err.stack);
+            res.send({
+                success: false,
+                message: "server err"
+            });
+        })
+    });
+
+    router.post('/transfer', function(req, res){
+        var token = guid.Guid();
+        Promise.all([
+            Account.update({'_id': req.body.source, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
+            Account.update({'_id': req.body.destination}, { $inc: {mount: req.body.amount}})
         ]).then(function() {
             return Transaction.create({
                 token: token,
@@ -202,9 +231,9 @@ module.exports = function(passport) {
         });
     })
 
-    //router.get('/home', isAuthenticated, function(req, res){
-    //    res.render('home', {user: req.account });
-    //});
+    router.get('/home', isAuthenticated, function(req, res){
+        res.render('home', {user: req.account });
+    });
     //
     //router.get('/signout', function(req, res) {
     //    req.logout();
