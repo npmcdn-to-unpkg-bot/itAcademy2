@@ -7,7 +7,7 @@ var storeAppControllers = require('./storeAppControllers');
         .factory('dataTransfer', function() {
           var products = [];
           var categories = [];
-          var numOfItems;
+          var numOfPages;
           var item;
 
           return {
@@ -23,11 +23,11 @@ var storeAppControllers = require('./storeAppControllers');
             getCategories: function () {
               return categories;
             },
-            setNumOfItems: function (data) {
-              numOfItems = data;
+            setNumOfPages: function (data) {
+              numOfPages = data;
             },
-            getNumOfItems: function () {
-              return numOfItems;
+            getNumOfPages: function () {
+              return numOfPages;
             },
             setItem: function (data) {
               item = data;
@@ -123,7 +123,8 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.store._id = $stateParams.storeId;
   $scope.sortOption = $stateParams.sort;
   $scope.searchWords = $stateParams.search;
-  $scope.page = $stateParams.page || 1;
+  $scope.page = Number($stateParams.page) || 1;
+  dataTransfer.getNumOfPages() ? $scope.numOfPages = _.range(1, dataTransfer.getNumOfPages() + 1) : $scope.numOfPages = [1];
 
   // setting proper Filters array
   if (_.isUndefined($stateParams.filter)) {
@@ -158,8 +159,9 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
       if (res.data.error)
         return console.log(res.data.error);
 
+      dataTransfer.setNumOfPages(res.data.numOfPages);
       dataTransfer.setProducts(res.data.products)
-      $state.go('store', {storeId: $scope.store._id, sort: sortOption, search: $scope.searchWords}, {location: true});
+      $state.go('store', {storeId: $scope.store._id, category: $scope.filterList, sort: sortOption, search: $scope.searchWords}, {location: true});
     }, function(err){
       console.log(err);
     });
@@ -172,13 +174,14 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
         storeId: $scope.store._id,
         category: $scope.filterList,
         sort: $scope.sortOption,
-        search: keywords
+        search: keywords,
+        page: 1
     }})
     .then(function(res){
       dataTransfer.setProducts(res.data.products);
       $scope.products = res.data.products;
 
-      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption, search: keywords}, {location: true});
+      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption, search: keywords, page: 1}, {location: true});
     }, function(err){
       console.log(err);
     });
@@ -192,13 +195,14 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
         storeId: $scope.store._id,
         category: $scope.filterList,
         sort: $scope.sortOption,
-        search: $scope.searchWords
+        search: $scope.searchWords,
+        page: 1
     }})
     .then(function(res){
       dataTransfer.setProducts(res.data.products);
       $scope.products = res.data.products;
 
-      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption, search: $scope.searchWords}, {location: true});
+      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption, search: $scope.searchWords, page: 1}, {location: true});
     }, function(err){
       console.log(err);
     });
@@ -220,24 +224,30 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
 
   // Start of Filtering section
   $scope.filterByCategory = function (category) {
-
     //stateParams returns 'string' in case of 1 parameter and 'object' in case of many parameters
     _.isUndefined($stateParams.filter) ? $scope.filterList = [category] : $scope.filterList = _.flatten(_.toArray([$stateParams.filter, category]));
 
     $scope.filterList = _.uniq($scope.filterList);
-
     $http.get('api/store/', {
       params: {
         storeId: $scope.store._id,
         category: $scope.filterList,
         sort: $scope.sortOption,
-        search: $scope.searchWords
+        search: $scope.searchWords,
     }})
 		.then(function(res){
-      dataTransfer.setProducts(res.data.products);
-      $scope.products = res.data.products;
 
-      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption, search: $scope.searchWords}, {location: true});
+      dataTransfer.setProducts(res.data.products);
+      dataTransfer.setNumOfPages(res.data.numOfPages);
+      var stateOptions = {
+        storeId: $scope.store._id,
+        filter: $scope.filterList,
+        sort:  $scope.sortOption,
+        search: $scope.searchWords,
+        page: 1
+      }
+
+      $state.go('store', stateOptions, {location: true, inherit: false});
 		}, function(err){
       console.log(err);
 		});
@@ -259,9 +269,9 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
     }})
 		.then(function(res){
       dataTransfer.setProducts(res.data.products);
-      $scope.products = res.data.products;
+      dataTransfer.setProducts(res.data.numOfPages);
 
-      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption, search: $scope.searchWords}, {location: true});
+      $state.go('store', {storeId: $scope.store._id, filter: $scope.filterList, sort: $scope.sortOption, search: $scope.searchWords}, {location: true, reload: true});
 		}, function(err){
       console.log(err);
 		});
@@ -326,8 +336,35 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   };
 
   $scope.goToPage = function (page) {
-    $state.go('store', {page: page});
+    if (page < 1) page = 1;
+    if (page > $scope.numOfPages.length) page = $scope.numOfPages.length;
+
+    $http.get('api/store/', {
+      params: {
+        storeId: $scope.store._id,
+        category: $scope.filterList,
+        sort: $scope.sortOption,
+        search: $scope.searchWords,
+        page: page
+    }})
+		.then(function(res){
+      dataTransfer.setNumOfPages(res.data.numOfPages);
+      dataTransfer.setProducts(res.data.products);
+      var stateOptions = {
+        storeId: $scope.store._id,
+        filter: $scope.filterList,
+        sort:  $scope.sortOption,
+        search: $scope.searchWords,
+        page: page
+      }
+
+      $state.go('store', stateOptions, {location: true, inherit: false});
+		}, function(err){
+      console.log(err);
+		});
+
   }
+
   dataTransfer.getCategories().length > 0 ? $scope.categories = dataTransfer.getCategories() : getCategories();
   dataTransfer.getProducts().length > 0 ? $scope.products = dataTransfer.getProducts() : getProducts();
 }]);

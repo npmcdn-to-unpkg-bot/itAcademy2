@@ -41,40 +41,83 @@ module.exports.set = function(app) {
 	// created itemsToSend in order to form and populate array of products for the store
 	app.get('/api/store/*', function (req, res) {
 		var storeId = req.query.storeId;
-		var categories = req.query.category || [];
+		var categories = [];
 		var sortOption = req.query.sort;
 		var search = req.query.search;
 		var page = req.query.page;
+		var itemsPerPage = 3;
 
-		getItems(storeId, categories, sortOption, search, page, res);
+		if (_.isString(req.query.category)) categories.push(req.query.category);
+		if (_.isObject(req.query.category)) categories = req.query.category;
+
+		if (_.isEmpty(sortOption) || sortOption.indexOf('name') !== -1) {
+			getItemsWithSortByName(storeId, categories, sortOption, search, page, itemsPerPage, res);
+		} else if (sortOption.indexOf('price') !== -1) {
+			getItemsWithSortByPrice(storeId, categories, sortOption, search, page, itemsPerPage, res)
+		};
 
 	});
 
-	var getItems = function(storeId, categories, sortOption, search, page, res) {
+	var getItemsWithSortByPrice = function(storeId, categories, sortOption, search, page, itemsPerPage, res) {
+		var res = res;
 		var query = {};
 		var result = {};
 		var sort = {};
-		var storeItems;
-		var page = page || 1;
-		var itemsPerPage = 3;
 
-		if (sortOption ==='price_desc') {
-	    _.extend(sort, {price: -1});
-	  } else if (sortOption === 'price_asc') {
-	    _.extend(sort, {price: 1});
-	  } else if (sortOption === 'name_desc') {
-	    _.extend(sort, {title: -1});
-	  } else if (sortOption === 'name_asc') {
-	    _.extend(sort, {title: 1});
-		}
+		console.log('in CHILD');
+		console.log(categories);
 
-		if (categories.length > 0) {
-			_.extend(query, {'category': {$in: categories}})
-		};
+		if (sortOption === 'price_desc') _.extend(sort, {price: -1});
 
-		if (search) {
-			_.extend(query, {$text: {$search: search}});
-		}
+		if (sortOption === 'price_asc') _.extend(sort, {price: 1})
+
+		if (categories.length > 0) _.extend(query, {'category': {$in: categories}});
+
+		if (search) _.extend(query, {$text: {$search: search}});
+
+		ItemSet.find({'storeId': storeId}).sort(sort).lean()
+		.then(function(itemSetItems) {
+			var itemSetItemsIds = _.map(itemSetItems, function(item) {
+				return item._id
+			});
+
+			storeItems = itemSetItems;
+
+			return Item.find({'_id': {$in: itemSetItemsIds}, query}).lean()
+		})
+		.then(function(items) {
+			result.products = [];
+			_.map(storeItems, (storeItem) => {
+				var item = _.find(items, (item) => {
+					return storeItem.itemId.toString() === item._id.toString()
+				});
+				if (item) result.products.push(_.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count')));
+			})
+
+			var start = page * itemsPerPage;
+			result.numOfPages = Math.ceil(result.products.length / 3);
+			result.products = result.products.splice((page - 1) * itemsPerPage, itemsPerPage);
+
+			return res.send(result);
+
+		})
+		.catch(function(err) {
+			return console.log(err);
+		})
+	}
+
+	var getItemsWithSortByName = function(storeId, categories, sortOption, search, page, itemsPerPage, res) {
+		var query = {};
+		var result = {};
+		var sort = {};
+
+		if (sortOption === 'name_desc') _.extend(sort, {title: -1});
+
+		if (sortOption === 'name_asc') _.extend(sort, {title: 1})
+
+		if (categories.length > 0) _.extend(query, {'category': {$in: categories}});
+
+		if (search) _.extend(query, {$text: {$search: search}});
 
 		Item.find(query).count()
 		.then(function(numOfItems) {
@@ -91,7 +134,6 @@ module.exports.set = function(app) {
 			return ItemSet.find({'storeId': storeId, 'itemId': {$in: itemsIds}}).lean()
 		})
 		.then(function(ItemSetItems) {
-
 			result.products = _.map(storeItems, (storeItem) => {
 				var item = _.find(ItemSetItems, (item) => {
 					return storeItem._id.toString() === item.itemId.toString()
@@ -100,6 +142,7 @@ module.exports.set = function(app) {
 			})
 
 			return res.send(result);
+
 		})
 		.catch(function(err) {
 			return console.log(err);

@@ -6,7 +6,7 @@ var storeAppControllers = require('./storeAppControllers');
         .factory('dataTransfer', function() {
           var products = [];
           var categories = [];
-          var numOfItems;
+          var numOfPages;
           var item;
 
           return {
@@ -22,11 +22,11 @@ var storeAppControllers = require('./storeAppControllers');
             getCategories: function () {
               return categories;
             },
-            setNumOfItems: function (data) {
-              numOfItems = data;
+            setNumOfPages: function (data) {
+              numOfPages = data;
             },
-            getNumOfItems: function () {
-              return numOfItems;
+            getNumOfPages: function () {
+              return numOfPages;
             },
             setItem: function (data) {
               item = data;
