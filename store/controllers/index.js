@@ -45,7 +45,7 @@ module.exports.set = function(app) {
 		var sortOption = req.query.sort;
 		var search = req.query.search;
 		var page = req.query.page;
-		var itemsPerPage = 3;
+		var itemsPerPage = 6;
 
 		if (_.isString(req.query.category)) categories.push(req.query.category);
 		if (_.isObject(req.query.category)) categories = req.query.category;
@@ -63,9 +63,6 @@ module.exports.set = function(app) {
 		var query = {};
 		var result = {};
 		var sort = {};
-
-		console.log('in CHILD');
-		console.log(categories);
 
 		if (sortOption === 'price_desc') _.extend(sort, {price: -1});
 
@@ -95,7 +92,7 @@ module.exports.set = function(app) {
 			})
 
 			var start = page * itemsPerPage;
-			result.numOfPages = Math.ceil(result.products.length / 3);
+			result.numOfPages = Math.ceil(result.products.length / itemsPerPage);
 			result.products = result.products.splice((page - 1) * itemsPerPage, itemsPerPage);
 
 			return res.send(result);
@@ -121,7 +118,7 @@ module.exports.set = function(app) {
 
 		Item.find(query).count()
 		.then(function(numOfItems) {
-			result.numOfPages = Math.ceil(numOfItems / 3);
+			result.numOfPages = Math.ceil(numOfItems / itemsPerPage);
 			return Item.find(query).sort(sort).skip((page - 1) * itemsPerPage).limit(itemsPerPage).lean()
 		})
 		.then(function(items) {
