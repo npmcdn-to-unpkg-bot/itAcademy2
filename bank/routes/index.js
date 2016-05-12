@@ -125,9 +125,11 @@ module.exports = function(passport) {
 
     router.post('/transfer', function(req, res){
         var token = guid.Guid();
+        var source_id = mongoose.Types.ObjectId(req.body.source);
+        var destination_id = mongoose.Types.ObjectId(req.body.destination);
         Promise.all([
-            Account.update({'_id': req.body.source, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
-            Account.update({'_id': req.body.destination}, { $inc: {mount: req.body.amount}})
+            Account.update({'_id': source_id, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
+            Account.update({'_id': destination_id}, { $inc: {mount: req.body.amount}})
         ]).then(function() {
             return Transaction.create({
                 token: token,
