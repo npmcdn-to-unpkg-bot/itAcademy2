@@ -25,86 +25,86 @@ module.exports.set = function(app) {
 
 	});
 
+	app.get('/api/getStoreCategories', function (req, res) {
+		var storeId = req.query.storeId;
+
+		Item.find().lean()
+		.then(function(items) {
+			var categories = _.uniq(_.map(items, (item) => {
+				return item.category;
+			}));
+
+			res.json(categories);
+		})
+	});
+
 	// created itemsToSend in order to form and populate array of products for the store
 	app.get('/api/store/*', function (req, res) {
 		var storeId = req.query.storeId;
 		var categories = req.query.category || [];
 		var sortOption = req.query.sort;
 		var search = req.query.search;
-		var storeItems = [];
-		var sortPrice = {};
-		var sortTitle = {};
+		var page = req.query.page;
 
-		// setting sorting options
-		if (sortOption ==='price_desc') {
-	    _.extend(sortPrice, {price: -1});
-	  } else if (sortOption === 'price_asc') {
-	    _.extend(sortPrice, {price: 1});
-	  } else if (sortOption === 'name_desc') {
-	    _.extend(sortTitle, {title: -1});
-	  } else if (sortOption === 'name_asc') {
-	    _.extend(sortTitle, {title: 1});
-	  }
-
-		ItemSet.find({storeId: storeId}).sort(sortPrice).lean()
-		.then(function(data) {
-			storeItems = data;
-			var storeItemsIds = _.map(storeItems, function(storeItem) {
-				return storeItem.itemId
-			});
-
-			var filter = {'_id': {$in: storeItemsIds}};
-
-			if (categories.length > 0) {
-				_.extend(filter, {'category': {$in: categories}})
-			};
-
-			if (search) {
-				_.extend(filter, {$text: {$search: search}});
-			}
-
-			return Item.find(filter).sort(sortTitle).lean();
-		})
-		.then(function(items) {
-			var result = {};
-
-			// depending on sortTitle and search we should map items from Items and ItemSet differently
-			if (!_.isEmpty(sortTitle) || search) {
-				result.products = _.map(items, (item) => {
-					var storeItem = _.find(storeItems, (storeItem) => {
-						return storeItem.itemId.toString() === item._id.toString()
-					});
-					return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
-				});
-			} else {
-				result.products = _.map(storeItems, (storeItem) => {
-					var item = _.find(items, (item) => {
-						return storeItem.itemId.toString() === item._id.toString()
-					});
-					return _.extend(_.pick(item, 'title', 'description', 'image', 'category'), _.pick(storeItem, 'storeId', 'itemId', 'price', 'count'));
-				})
-			}
-
-			// selecting items that has categories field
-			if (categories.length > 0) {
-				result.products = _.filter(result.products, (item) => {
-					return _.has(item, 'category');
-				});
-
-				return res.send(result);
-			} else {
-				result.categories = _.uniq(_.map(result.products, (item) => {
-					return item.category;
-				}));
-
-				return res.send(result);
-			}
-		})
-		.catch(function(err){
-			return console.log(err);
-		});
+		getItems(storeId, categories, sortOption, search, page, res);
 
 	});
+
+	var getItems = function(storeId, categories, sortOption, search, page, res) {
+		var query = {};
+		var result = {};
+		var sort = {};
+		var storeItems;
+		var page = page || 1;
+		var itemsPerPage = 3;
+
+		if (sortOption ==='price_desc') {
+	    _.extend(sort, {price: -1});
+	  } else if (sortOption === 'price_asc') {
+	    _.extend(sort, {price: 1});
+	  } else if (sortOption === 'name_desc') {
+	    _.extend(sort, {title: -1});
+	  } else if (sortOption === 'name_asc') {
+	    _.extend(sort, {title: 1});
+		}
+
+		if (categories.length > 0) {
+			_.extend(query, {'category': {$in: categories}})
+		};
+
+		if (search) {
+			_.extend(query, {$text: {$search: search}});
+		}
+
+		Item.find(query).count()
+		.then(function(numOfItems) {
+			result.numOfPages = Math.ceil(numOfItems / 3);
+			return Item.find(query).sort(sort).skip((page - 1) * itemsPerPage).limit(itemsPerPage).lean()
+		})
+		.then(function(items) {
+			var itemsIds = _.map(items, function(item) {
+				return item._id
+			});
+
+			storeItems = items;
+
+			return ItemSet.find({'storeId': storeId, 'itemId': {$in: itemsIds}}).lean()
+		})
+		.then(function(ItemSetItems) {
+
+			result.products = _.map(storeItems, (storeItem) => {
+				var item = _.find(ItemSetItems, (item) => {
+					return storeItem._id.toString() === item.itemId.toString()
+				});
+				return _.extend(_.pick(storeItem, 'title', 'description', 'image', 'category'), _.pick(item, 'storeId', 'itemId', 'price', 'count'));
+			})
+
+			return res.send(result);
+		})
+		.catch(function(err) {
+			return console.log(err);
+		})
+	}
 
 	app.post('/api/order', function (req, res) {
 		var order = {
@@ -128,13 +128,13 @@ module.exports.set = function(app) {
 	})
 
 	app.post('/api/makePurchase', function (req, res) {
-		var cartIds = _.map(req.body.user.cart, function(item) {
+		var cartIds = _.map(req.body.userCart, function(item) {
 			return item.itemId;
 		});
 
-		var cartItems = req.body.user.cart;
+		var cartItems = req.body.userCart;
 
-		ItemSet.find({'itemId': {$in: cartIds}, 'storeId': req.body.store._id}).lean()
+		ItemSet.find({'itemId': {$in: cartIds}, 'storeId': req.user.storeId}).lean()
 		.then(function(items) {
 			var result = _.map(items, (item) => {
 				var cartItem = _.find(cartItems, (cartItem) => {
@@ -155,8 +155,8 @@ module.exports.set = function(app) {
 			if (bankTransaction.success) {
 				var transaction = {
 					token: bankTransaction.token,
-					accountFrom: req.body.user.email,
-					accountTo: req.body.store.email,
+					accountFrom: req.user.email,
+					accountTo: req.store.email,
 					amount: req.body.totalPrice
 				};
 				return Transaction.create(transaction)
@@ -170,7 +170,7 @@ module.exports.set = function(app) {
 			return Order.create({
 				date: Date.now(),
 				itemSet: orderSet,
-				user: req.body.user.email,
+				user: req.user.email,
 				transactionId: transaction._id
 			})
 		})
@@ -189,8 +189,8 @@ module.exports.set = function(app) {
 		        method: 'POST',
 		        uri: 'http://localhost:3001/api/transfer',
 		        form: {
-		          source: req.body.user.email,
-		          password: req.body.user.password,
+		          source: req.user.email,
+		          password: req.user.password,
 							destination: req.body.store.email,
 							amount: req.body.totalPrice
 		        }
@@ -211,7 +211,7 @@ module.exports.set = function(app) {
 		var userOrders = [];
 
 
-		Order.find(query).lean()
+		Order.find(query).sort({date: 'desc'}).lean()
 		.then(function(orders) {
 			var ordersClean = _.map(orders, function(order) {
 				return _.pick(order, 'itemSet', 'date', '_id')
@@ -227,48 +227,3 @@ module.exports.set = function(app) {
 		res.sendFile('index.html', { root:  __dirname + '/../public' });
 	});
 };
-
-/* LOGIN - LOGOUT simple version
-	app.post('/api/add_user', function (req, res) {
-		var user = {
-			storeId: req.body.storeId,
-			name: req.body.name,
-			surname: req.body.surname,
-			email: req.body.email,
-			password: req.body.password,
-			class: 'registered'
-		};
-
-		User.create(user)
-		.then(function(data) {
-			var user = _.pick(data, 'name', 'surname', 'email', 'storeId', 'cart');
-
-			return res.send(user);
-		})
-		.catch(function(err){
-			return res.status(400).send({error: err.message})
-		});
-
-	});
-
-	app.post('/api/login_user', function (req, res) {
-		var user = {
-			storeId: req.body.storeId,
-			email: req.body.email,
-			password: req.body.password
-		};
-
-		//console.log(user);
-
-		User.findOne(user)
-		.then(function(data) {
-			var user = _.pick(data, 'name', 'surname', 'email', 'storeId', 'cart');
-
-			return res.send(user);
-		})
-		.catch(function(err){
-			return res.status(400).send({error: err.message})
-		});
-
-	});
-	*/

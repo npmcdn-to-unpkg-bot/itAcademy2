@@ -94,11 +94,12 @@ module.exports = function(passport) {
         ]);
     });
 
-    router.post('/api/transfer', isAuthenticated, function(req, res){
+    // removed isAuthenticated and changed 1st Account.update 'login' to req.body.source
+    router.post('/api/transfer', function(req, res){
         var token = guid.Guid();
-        var currentAccount = req.account;
+        console.log(req.body);
         Promise.all([
-            Account.update({'login': currentAccount.login, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
+            Account.update({'login': req.body.source, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
             Account.update({'login': req.body.destination}, { $inc: {mount: req.body.amount}})
         ]).then(function() {
             return Transaction.create({

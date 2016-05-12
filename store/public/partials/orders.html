@@ -20,7 +20,7 @@
     <tr ng-repeat="order in orders">
       <td>{{$index + 1}}</td>
       <td>
-        <p ng-repeat="item in order.itemSet"><a ui-sref="store.item({item_title: item.title})">{{item.title}}</a></p>
+        <p ng-repeat="item in order.itemSet">{{item.title}}</p>
       </td>
       <td>{{order.date | date:"MM/dd/yyyy 'at' h:mma"}}</td>
       <td>{{order._id}}</td>
