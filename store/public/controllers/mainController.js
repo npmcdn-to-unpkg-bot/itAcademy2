@@ -8,6 +8,7 @@ var storeAppControllers = require('./storeAppControllers');
           var categories = [];
           var numOfPages;
           var item;
+          var currentPage;
 
           return {
             setProducts: function (data) {
@@ -33,6 +34,12 @@ var storeAppControllers = require('./storeAppControllers');
             },
             getItem: function () {
               return item;
+            },
+            setCurrentPage: function (data) {
+              currentPage = Number(data);
+            },
+            getCurrentPage: function () {
+              return currentPage;
             }
           };
 

@@ -9,6 +9,7 @@ var storeAppControllers = require('./storeAppControllers');
           var categories = [];
           var numOfPages;
           var item;
+          var currentPage;
 
           return {
             setProducts: function (data) {
@@ -34,6 +35,12 @@ var storeAppControllers = require('./storeAppControllers');
             },
             getItem: function () {
               return item;
+            },
+            setCurrentPage: function (data) {
+              currentPage = Number(data);
+            },
+            getCurrentPage: function () {
+              return currentPage;
             }
           };
 
@@ -124,6 +131,7 @@ storeAppControllers.controller('StoreFrontCtrl', ['$cookies','$scope', '$http','
   $scope.sortOption = $stateParams.sort;
   $scope.searchWords = $stateParams.search;
   $scope.page = Number($stateParams.page) || 1;
+  $scope.currentPage = $scope.page;
   dataTransfer.getNumOfPages() ? $scope.numOfPages = _.range(1, dataTransfer.getNumOfPages() + 1) : $scope.numOfPages = [1];
 
   // setting proper Filters array
