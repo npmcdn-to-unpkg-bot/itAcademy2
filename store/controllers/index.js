@@ -58,8 +58,6 @@ module.exports.set = function(app) {
 		if (_.isString(req.query.category)) categories.push(req.query.category);
 		if (_.isObject(req.query.category)) categories = req.query.category;
 
-		console.log(req.query);
-
 		if (_.isEmpty(sortOption) || sortOption.indexOf('name') !== -1) {
 			getItemsWithSortByName(storeId, categories, sortOption, search, page, itemsPerPage, res);
 		} else if (sortOption.indexOf('price') !== -1) {

@@ -133,6 +133,104 @@ describe('server is running', function() {
     })
   });
 
+  it('should return Array with products for given store sorted by NAME: descending', function (done) {
+    this.timeout(6000);
 
+    supertest(app)
+    .get('/api/stores')
+    .expect(200)
+    .end(function(err, res) {
+      if (err) return done(err)
+      var storeId = res.body[1]._id;
+
+      supertest(app)
+      .get('/api/store/')
+      .query({storeId: storeId})
+      .query('sort=name_desc')
+      .expect(200)
+      .end(function(err, res) {
+        if (err) return done(err);
+
+        (res.body.products[0].title.toLowerCase() > res.body.products[1].title.toLowerCase()).should.be.true();
+        done();
+      })
+
+    })
+  });
+
+  it('should return Array with products for given store sorted by PRICE: ascending', function (done) {
+    this.timeout(6000);
+
+    supertest(app)
+    .get('/api/stores')
+    .expect(200)
+    .end(function(err, res) {
+      if (err) return done(err)
+      var storeId = res.body[1]._id;
+
+      supertest(app)
+      .get('/api/store/')
+      .query({storeId: storeId})
+      .query('sort=price_asc')
+      .expect(200)
+      .end(function(err, res) {
+        if (err) return done(err);
+
+        (res.body.products[0].price < res.body.products[1].price).should.be.true();
+        done();
+      })
+
+    })
+  });
+
+  it('should return Array with products for given store according to user SEARCH', function (done) {
+    this.timeout(6000);
+
+    supertest(app)
+    .get('/api/stores')
+    .expect(200)
+    .end(function(err, res) {
+      if (err) return done(err)
+      var storeId = res.body[1]._id;
+
+      supertest(app)
+      .get('/api/store/')
+      .query({storeId: storeId})
+      .query('search=parfumes')
+      .expect(200)
+      .end(function(err, res) {
+        if (err) return done(err);
+
+        res.body.products[0].title.indexOf('parfumes').should.be.above(-1);
+        done();
+      })
+
+    })
+  });
+
+  it('should return Empty Array for given store according to user SEARCH that do not match any product', function (done) {
+    this.timeout(6000);
+
+    supertest(app)
+    .get('/api/stores')
+    .expect(200)
+    .end(function(err, res) {
+      if (err) return done(err)
+      var storeId = res.body[1]._id;
+
+      supertest(app)
+      .get('/api/store/')
+      .query({storeId: storeId})
+      .query('search=abracadabra')
+      .expect(200)
+      .end(function(err, res) {
+        if (err) return done(err);
+
+        _.isEmpty(res.body.products).should.be.true();
+        done();
+      })
+
+    })
+  });
 
 })
