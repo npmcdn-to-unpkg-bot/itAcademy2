@@ -28,13 +28,21 @@ module.exports.set = function(app) {
 	app.get('/api/getStoreCategories', function (req, res) {
 		var storeId = req.query.storeId;
 
-		Item.find().lean()
+		ItemSet.find({storeId: storeId}).lean()
+		.then(function(itemSetItems) {
+			var itemSetItemsIds = _.map(itemSetItems, function(item) {
+				return item.itemId
+			});
+
+			return Item.find({'_id': {$in: itemSetItemsIds}}).lean()
+		})
 		.then(function(items) {
+			//console.log(items);
 			var categories = _.uniq(_.map(items, (item) => {
 				return item.category;
 			}));
 
-			res.json(categories);
+			return res.json(categories);
 		})
 	});
 
@@ -49,6 +57,8 @@ module.exports.set = function(app) {
 
 		if (_.isString(req.query.category)) categories.push(req.query.category);
 		if (_.isObject(req.query.category)) categories = req.query.category;
+
+		console.log(req.query);
 
 		if (_.isEmpty(sortOption) || sortOption.indexOf('name') !== -1) {
 			getItemsWithSortByName(storeId, categories, sortOption, search, page, itemsPerPage, res);

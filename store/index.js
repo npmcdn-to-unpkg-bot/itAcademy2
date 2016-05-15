@@ -15,11 +15,15 @@ app.use(express.static(__dirname + '/public'));
 
 require('./controllers').set(app);
 
-var start = function() {
-  app.listen(config.port, function () {
-    console.log('Store app listening on port ' + config.port);
-  });
-}
+if (require.main === module) {
+  var start = function() {
+    app.listen(config.port, function () {
+      console.log('Store app listening on port ' + config.port);
+    });
+  };
 
-start();
+  start();
+} else {
+  module.exports = app;
+}
 // module.exports.start = start();
