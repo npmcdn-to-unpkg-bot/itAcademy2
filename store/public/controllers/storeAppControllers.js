@@ -1,7 +1,8 @@
 var storeAppControllers = angular.module('storeAppControllers', ['underscore'])
 
 storeAppControllers.controller('StoreCtrl', ['$cookies', '$scope', '$http', 'dataTransfer', function($cookies, $scope, $http, dataTransfer){
-
+  $scope.test = 7;
+  
   var getStores = function() {
     $http.get('api/stores')
 		.then(function(res){
