@@ -55,6 +55,8 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
     };
 
     $scope.transfer = function() {
+        $scope.formData.source = $scope.account.login;
+        $scope.formData.password = $scope.account.password;
         $http.post('/api/transfer', $scope.formData)
             .success(function(data) {
                 $scope.formData = {};
@@ -69,9 +71,9 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
 
 
     $scope.getMoney = function() {
-        $http.post('/api/getMoney', $scope.formData)
+        $http.post('/api/getMoney', $scope.account)
             .success(function (data) {
-                $scope.formData = {};
+                console.log(data);
                 $scope.accounts = data;
                 console.log(data);
             })

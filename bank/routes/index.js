@@ -20,14 +20,14 @@ var isAuthenticated = function (req, res, next) {
 module.exports = function(passport) {
 
     router.post('/api/login', function (req, res)
-    {   
+    {
         Account.findOne({ 'login': req.body.login, 'password': req.body.password},
         function(err, account) {
             if(err)
             {
                 res.send(err);
             }
-            res.json(req.body.login);
+            res.json(account);
         });
     });
 
@@ -159,14 +159,14 @@ module.exports = function(passport) {
 
         Promise.all([
             Account.update({
-                login: req.body.login, password: req.body.password
+                'login': req.body.login
             }, {$inc: {amount: 500}}),
             Transaction.create({
-                token: token,
-                time: Date.now(),
-                source: 'salary',
-                destination: req.body.login,
-                amount: 500
+                'token': token,
+                'time': Date.now(),
+                'source': 'salary',
+                'destination': req.body.login,
+                'amount': 500
             })
 
         ]).then(Account.find(function (err, accounts) {
