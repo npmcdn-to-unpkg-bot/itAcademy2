@@ -20,16 +20,18 @@ var isAuthenticated = function (req, res, next) {
 module.exports = function(passport) {
 
     router.post('/api/login', function (req, res)
-    {
+    {   
         Account.findOne({ 'login': req.body.login, 'password': req.body.password},
         function(err, account) {
             if(err)
             {
                 res.send(err);
             }
-            res.json(account);
+            res.json(req.body.login);
         });
     });
+
+
 
     router.get('/api/accounts', function(req, res)
     {
@@ -52,7 +54,7 @@ module.exports = function(passport) {
                 }
                 res.json(account);
             });
-    })
+    });
 
     router.post('/salary', isAuthenticated, function(req,res) {
         var token = guid.Guid();
@@ -70,13 +72,11 @@ module.exports = function(passport) {
 
 
 
-    router.get('/signup', function(req, res){
-        res.render('signup',{message: req.flash('message')});
-    });
 
-    router.post('/signup', passport.authenticate('signup', {
+
+    router.post('/api/signup', passport.authenticate('signup', {
         successRedirect: '/home',
-        failureRedirect: '/signup',
+        failureRedirect: '/home',
         failureFlash: true
     }));
 
@@ -99,8 +99,8 @@ module.exports = function(passport) {
         var token = guid.Guid();
         console.log(req.body);
         Promise.all([
-            Account.update({'login': req.body.source, 'password': req.body.password}, {$inc: {amount: -req.body.amount}}),
-            Account.update({'login': req.body.destination}, { $inc: {mount: req.body.amount}})
+            Account.update({'login': req.body.source, 'password': req.body.password}, { $inc: {'amount': -req.body.amount}}),
+            Account.update({'login': req.body.destination}, { $inc: {'amount': req.body.amount}})
         ]).then(function() {
             return Transaction.create({
                 token: token,
@@ -233,14 +233,16 @@ module.exports = function(passport) {
         });
     })
 
-    router.get('/home', isAuthenticated, function(req, res){
-        res.render('home', {user: req.account });
-    });
-    //
-    //router.get('/signout', function(req, res) {
-    //    req.logout();
-    //    res.redirect('/');
-    //});
+    //router.get('/home', isAuthenticated, function(req, res){
+    //    res.render('home', {user: req.account });
+    //    });
+    ////
+    ////router.get('/signout', function(req, res) {
+    ////    req.logout();
+    ////    res.redirect('/');
+    ////});
+
+
 
     router.all('*', function(req, res, next) {
         // Just send the index.html for other files to support HTML5Mode
