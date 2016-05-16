@@ -1,17 +1,19 @@
 <div class="jumbotron text-center">
-    <h1>Hello {{user.login}}!</h1>
+    <h1>Hello {{account }}!</h1>
 </div>
 
 <div id="account-form" class="row">
     <div class="col-sm-8 col-sm-offset-2 text-center">
-        <form class="form-signin" action="/signup" method="post">
+        <form class="form-signin" ng-submit="transfer(formData)">
             <div class="form-group">
 
-                <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.login">
+                <input type="text" class="form-control input-lg text-center" placeholder="Type your login here" ng-model="formData.source">
                 <input type="password" class="form-control input-lg text-center" placeholder="Enter your password here" ng-model="formData.password">
+                <input type="text" class="form-control input-lg text-center" placeholder="Type destination here" ng-model="formData.destination">
+                <input type="number" class="form-control input-lg text-center" placeholder="Type amount" ng-model="formData.amount">
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+            <button type="submit" class="btn btn-primary btn-lg">Make transfer</button>
         </form>
         <a href="/index" class="text-center new-account">Sign in</a>
     </div>

@@ -1,12 +1,9 @@
 var bankControllers = angular.module('bankControllers', []);
 
-bankControllers.controller('mainController', ['$scope', '$http', '$state', function($scope, $http, $state) {
+bankControllers.controller('mainController', ['$scope', '$http', '$state', 'loginInfo', function($scope, $http, $state, loginInfo) {
     $scope.formData = {};
-
-
-    $http.get('/home').success(function(data) {
-        $scope.user = user;
-    });
+    $scope.account = loginInfo.getAccount();
+    console.log(loginInfo.getAccount());
 
     $http.get('/api/accounts')
         .success(function(data) {
@@ -34,6 +31,7 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', funct
     };
 
     $scope.createAccount = function() {
+        console.log('tip');
         $http.post('/api/accounts', $scope.formData)
             .success(function(data) {
                 $scope.formData = {};
@@ -82,11 +80,10 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', funct
             });
     }
 
-        $scope.loginUser = function (formData) {
-            $http.post('api/login_user', formData)
+    $scope.loginUser = function (formData) {
+           $http.post('api/login', formData)
                 .then(function(res){
-                    var user = res.data;
-
+                    loginInfo.setAccount(res.data);
                     $state.go('home');
 
                 }, function(err){
@@ -178,6 +175,18 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', funct
     (function() {
         angular
             .module('Bank', ['bankControllers', 'ui.router', 'ngCookies'])
+            .factory('loginInfo', function() {
+                var account;
+
+                return{
+                    setAccount: function(data) {
+                        account = data;
+                    },
+                    getAccount: function() {
+                        return account;
+                    }
+                }
+            })
             .config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
                 function($stateProvider, $urlRouterProvider, $locationProvider) {
 

@@ -1,3 +1,4 @@
+î
 var storeAppControllers = require('./storeAppControllers');
 
 (function() {
