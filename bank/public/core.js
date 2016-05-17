@@ -47,11 +47,14 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             .success(function(data) {
                 $scope.formData = {};
                 $scope.transfers = data;
-                if(data.success)
-                $scope.account.amount = data.amount;
-                else
-                alert(data.message);
-                console.log(data.message);
+                if(data.success) {
+                    $scope.account.amount = data.amount;
+                    alert(data.message);
+                }
+                else {
+                    alert(data.message);
+                    console.log(data.message);
+                }
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -64,9 +67,10 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             .then(function (data) {
                 $scope.accounts = data;
                 $scope.account.amount += 500;
-                $state.go('home');
+                alert("You've got salary!");
             }, function(err){
                 console.log(err);
+                alert("You haven't got salary!");
             });
     }
 
