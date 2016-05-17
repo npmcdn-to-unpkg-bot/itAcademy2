@@ -278,7 +278,10 @@ module.exports = function() {
     router.get('/checkOperation', function(req, res)
     {
         Transaction.findOne({
-            token: req.body.token
+            'token': req.body.token,
+            'source': req.bode.source,
+            'destination': req.body.destination,
+            'amount': req.body.amount
         }, function(err, operation){
             if(err)
             {
@@ -290,7 +293,7 @@ module.exports = function() {
             else
             res.json({success: true});
         })
-    });
+    })
 
     router.post('/api/accounts', function(req, res)
     {
