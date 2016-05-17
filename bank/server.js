@@ -57,5 +57,10 @@ if (app.get('env') === 'development') {
     });
 }
 
-app.listen(3001);
-console.log("App listening on port 3001");
+if (require.main === module) {
+    app.listen(3001);
+    console.log("App listening on port 3001");
+} else {
+    module.exports = app;
+}
+

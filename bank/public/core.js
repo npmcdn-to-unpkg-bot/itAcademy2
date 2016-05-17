@@ -31,7 +31,8 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
         $http.post('/api/accounts', $scope.formData)
             .success(function(data) {
                 $scope.formData = {};
-                $scope.accounts = data;
+                $scope.accounts = data.accLength;
+                alert(data.message);
                 $state.go('login');
             })
             .error(function(data) {

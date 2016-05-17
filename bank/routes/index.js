@@ -17,7 +17,8 @@ module.exports = function() {
                 res.json({success: false})
             }
             else if (account.password == req.body.password) {
-                res.json({success: true});
+                res.json({amount: account.amount,
+                    success: true});
             } else {
                 res.json({success: false});
             }
@@ -63,15 +64,15 @@ module.exports = function() {
         var operations = [];
         Promise.all([
             Transaction.find({'source': req.body.login}, function(err, transactions) {
-                operations = transactions.map(function(transaction) {
+                operations = operations.concat(transactions.map(function(transaction) {
                     return transaction;
-                });
+                }));
 
             }),
             Transaction.find({'destination': req.body.login}, function(err, transactions) {
-                operations = transactions.map(function(transaction) {
+                operations = operations.concat(transactions.map(function(transaction) {
                     return transaction;
-                });
+                }));
             })
         ]).then(function(){
             res.json(operations);
@@ -296,23 +297,25 @@ module.exports = function() {
         //register account
     router.post('/api/accounts', function(req, res)
     {
+        var message = "Signup successful";
         Account.create({
             login : req.body.login,
             password: req.body.password,
             amount: 0
         }, function(err, accounts) {
             if (err) {
-                res.send(err);
+                message = 'User already exists!';
             }
-            Account.find(function(err, accounts)
+        }).then(Account.find(function(err, accounts)
+        {
+            if (err)
             {
-                if (err)
-                {
-                    res.send(err);
-                }
-                res.json(accounts.length);
-            });
-        });
+                res.json(err);
+            }
+            else
+            res.json({'accLength': accounts.length,
+            'message': message});
+        }));
     });
 
         //api for removing objects
