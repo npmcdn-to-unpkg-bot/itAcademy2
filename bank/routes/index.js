@@ -72,28 +72,76 @@ module.exports = function(passport) {
 
     // removed isAuthenticated and changed 1st Account.update 'login' to req.body.source
     router.post('/api/transfer', function(req, res){
+        //generate token for transaction
         var token = guid.Guid();
-        console.log(req.body);
+        var correct = true;
         Promise.all([
-            Account.update({'login': req.body.source, 'password': req.body.password}, { $inc: {'amount': -req.body.amount}}),
-            Account.update({'login': req.body.destination}, { $inc: {'amount': req.body.amount}})
+            //check if source exists
+            Account.findOne({ 'login': req.body.source}, function(err, account) {
+                    console.log(account);
+                    if(account == null) {
+                        correct = false;
+                        res.json({
+                            success: false,
+                            message: "Source account haven't found"
+                            })
+                        }
+                    if((account.amount - req.body.amount) < 0) {
+                        correct = false;
+                        res.json({
+                            success: false,
+                            message: "Not enough founds"
+                        })
+                    }
+                }),
+            //check if destinations exists
+            Account.findOne({ 'login': req.body.destination}, function(err, account) {
+                console.log(account);
+                if(account == null) {
+                    correct = false;
+                    res.json({
+                        success: false,
+                        message: "Destination account haven't found"
+                    })
+                }
+            })
         ]).then(function() {
-            return Transaction.create({
-                token: token,
-                time: Date.now(),
-                source: req.body.source,
-                destination: req.body.destination,
-                amount: req.body.amount
-            });
-        }).then(function () {
-            res.json({
+            if(correct) {
+                return Account.update({
+                    'login': req.body.source,
+                    'password': req.body.password
+                }, {$inc: {'amount': -req.body.amount}})
+            }
+            return false;
+        })
+        .then(function() {
+                if (correct) {
+                    return Account.update({'login': req.body.destination}, {$inc: {'amount': req.body.amount}});
+                }
+                return false;
+            })
+        .then(function() {
+                if(correct) {
+                    return Transaction.create({
+                        token: token,
+                        time: Date.now(),
+                        source: req.body.source,
+                        destination: req.body.destination,
+                        amount: req.body.amount
+                    });
+                }
+                return false;
+        })
+        .then(function () {
+                res.json({
                 success: true,
                 message: "good",
                 token: token
             });
-        }).catch(function (err) {
+        })
+        .catch(function (err) {
             console.log(err.stack);
-            res.send({
+            res.json({
                 success: false,
                 message: "server err"
             });

@@ -15,18 +15,20 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             console.log('Error: ' + data);
         });
 
-    $scope.checkBalance = function()
-    {
-        $http.get('/api/checkBalance', $scope.formData)
-            .success(function(data)
-            {
-                $scope.balance = data;
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
-            })
-    };
 
+    //$scope.checkBalance = function()
+    //{
+    //    $http.get('/api/checkBalance', $scope.formData)
+    //        .success(function(data)
+    //        {
+    //            $scope.balance = data;
+    //        })
+    //        .error(function(data) {
+    //            console.log('Error: ' + data);
+    //        })
+    //};
+
+        //needed to show your operations
     $scope.getOperations = function() {
         console.log('tip');
         $http.post('/api/operations', $scope.account)
@@ -54,17 +56,7 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             });
     };
 
-    $scope.deleteAccount = function(id) {
-        $http.delete('/api/accounts/' + id)
-            .success(function(data) {
-                $scope.accounts = data;
-                console.log(data);
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
-            });
-    };
-
+         //allows to transfer money from app
     $scope.transfer = function() {
         $scope.formData.source = $scope.account.login;
         $scope.formData.password = $scope.account.password;
@@ -79,8 +71,7 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             });
     };
 
-
-
+        //gets salary to user
     $scope.getMoney = function() {
         $http.post('/api/getMoney', $scope.account)
             .then(function (data) {

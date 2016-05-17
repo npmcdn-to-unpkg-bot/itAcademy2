@@ -7,8 +7,8 @@
     <div class="col-sm-8 col-sm-offset-2 text-center">
         <form class="form-signin" ng-submit="transfer(formData)">
             <div class="form-group">
-                <input type="text" class="form-control input-lg text-center" placeholder="Type destination here" ng-model="formData.destination">
-                <input type="number" class="form-control input-lg text-center" placeholder="Type amount" ng-model="formData.amount">
+                <input type="text" class="form-control input-lg text-center" placeholder="Type destination here" ng-model="formData.destination" required>
+                <input type="number" class="form-control input-lg text-center" placeholder="Type amount" ng-model="formData.amount" required>
             </div>
 
             <button type="submit" class="btn btn-primary btn-lg">Make transfer</button>
@@ -19,6 +19,6 @@
         <form class="form-signin" ng-submit="getOperations()">
             <button type="submit" class="btn btn-primary btn-lg">Check my operations</button>
         </form>
-        <a href="/index" class="text-center new-account">Sign in</a>
+        <a href="/index" class="text-center new-account">Log out</a>
     </div>
 </div>
