@@ -1,0 +1,9 @@
+<section ng-init="findOne()">
+    <h2>{{product.title}} <a ng-show="currentUser._id == product.creator._id" href="/products/{{product._id}}/edit">edit</a></h2>
+    <p>{{product.content}}</p>
+    <p>{{product.price}}$</p>
+    <div>
+        <span class="badge badge-success">Posted {{product.created | date:'medium'}}</span>
+        <div class="pull-right"><span class="badge badge-success">Posted by {{product.creator.storename}}</span></div>
+    </div>
+</section>

@@ -1,0 +1,14 @@
+
+<section ng-init="find()">
+    <div ng-repeat="product in products">
+        <h1><a ng-href="products/{{product._id}}">{{product.title}}</a></h1>
+        <p>{{product.content}}</p>
+        <p>{{product.price}}$</p>
+        <div>
+            <span class="badge badge-success">Posted {{product.created | date:'medium'}}</span>
+            <div class="pull-right"><span class="badge badge-success">Posted by {{product.creator.storename}}</span></div>
+        </div>
+        <hr>
+    </div>
+    <h1 ng-hide="!products || products.length">No products yet. <br> <a href="/products/create">Create One</a>?</h1>
+</section>
