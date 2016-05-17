@@ -32,16 +32,16 @@ var isAuthenticated = function (req, res, next) {
     res.redirect('/');
 };
 
-var passport = require('passport');
-var routes = require('./routes/index.js')(passport);
+//var passport = require('passport');
+var routes = require('./routes/index.js')();
 app.use('/', routes);
 
 var expressSession = require('express-session');
 app.use(expressSession({secret: 'mySecretKey'}));
-app.use(passport.initialize());
-app.use(passport.session());
-var initPassport = require('./passport/init');
-initPassport(passport);
+//app.use(passport.initialize());
+//app.use(passport.session());
+//var initPassport = require('./passport/init');
+//initPassport(passport);
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

@@ -64,6 +64,7 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             .success(function(data) {
                 $scope.formData = {};
                 $scope.transfers = data;
+                $scope.account.amount = data.amount;
                 console.log(data);
             })
             .error(function(data) {
@@ -78,6 +79,7 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
                 console.log(data);
                 $scope.accounts = data;
                 console.log(data);
+                $scope.account.amount += 500;
                 $state.go('home');
             }, function(err){
                 console.log(err);
