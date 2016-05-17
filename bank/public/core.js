@@ -34,9 +34,9 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
         $http.post('/api/operations', $scope.account)
             .then(function(res) {
                 console.log('tip1');
-               loginInfo.operations = res.body;
-                $state.go('operations');
-            }, function(err) {
+                console.log(res);
+            },
+            function(err) {
                 console.log('errrrrr');
                 console.log(err);
             });
