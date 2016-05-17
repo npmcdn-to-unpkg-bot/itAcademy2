@@ -3,7 +3,7 @@ var bankControllers = angular.module('bankControllers', []);
 bankControllers.controller('mainController', ['$scope', '$http', '$state', 'loginInfo', function($scope, $http, $state, loginInfo) {
     $scope.formData = {};
     $scope.account = loginInfo.getAccount();
-    $scope.operations = loginInfo.getOperations;
+    $scope.operations = loginInfo.getOperations();
     console.log(loginInfo.getAccount());
 
     $http.get('/api/accounts')
@@ -15,26 +15,13 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             console.log('Error: ' + data);
         });
 
-
-    //$scope.checkBalance = function()
-    //{
-    //    $http.get('/api/checkBalance', $scope.formData)
-    //        .success(function(data)
-    //        {
-    //            $scope.balance = data;
-    //        })
-    //        .error(function(data) {
-    //            console.log('Error: ' + data);
-    //        })
-    //};
-
         //needed to show your operations
     $scope.getOperations = function() {
         console.log('tip');
         $http.post('/api/operations', $scope.account)
             .then(function(res) {
-                console.log('tip1');
-                console.log(res);
+                loginInfo.setOperations(res.data);
+                $state.go('operations');
             },
             function(err) {
                 console.log('errrrrr');

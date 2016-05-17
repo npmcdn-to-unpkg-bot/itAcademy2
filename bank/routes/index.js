@@ -67,8 +67,8 @@ module.exports = function() {
                 });
             })
         ]).then(function(){
-            res.body = operations;
-
+            console.log(operations);
+            res.json(operations);
         });
     });
 
@@ -280,6 +280,10 @@ module.exports = function() {
             {
                 res.send(err);
             }
+            if(operation == null){
+                res.json({success: false});
+            }
+            else
             res.json({success: true});
         })
     });
