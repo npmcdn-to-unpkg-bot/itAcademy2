@@ -181,6 +181,13 @@ module.exports = function() {
                         message: "Not enough founds"
                     })
                 }
+                if(account.password != req.body. password) {
+                    correct = false;
+                    res.json({
+                        success: false,
+                        message: "Bad password!"
+                    })
+                }
             }),
             //check if destinations exists
             Account.findOne({ '_id': destination_id}, function(err, account) {
@@ -268,13 +275,10 @@ module.exports = function() {
     //        res.json(account);
     //    });
 
-    router.get('/api/checkOperation', function(req, res)
+    router.get('/checkOperation', function(req, res)
     {
         Transaction.findOne({
-            token: req.body.token,
-            source: req.body.source,
-            destination: req.body.destination,
-            amount: req.body.amount
+            token: req.body.token
         }, function(err, operation){
             if(err)
             {
