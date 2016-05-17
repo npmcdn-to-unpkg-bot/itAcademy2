@@ -3,6 +3,7 @@ var bankControllers = angular.module('bankControllers', []);
 bankControllers.controller('mainController', ['$scope', '$http', '$state', 'loginInfo', function($scope, $http, $state, loginInfo) {
     $scope.formData = {};
     $scope.account = loginInfo.getAccount();
+    $scope.operations = loginInfo.getOperations;
     console.log(loginInfo.getAccount());
 
     $http.get('/api/accounts')
@@ -27,7 +28,17 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
     };
 
     $scope.getOperations = function() {
-        $http.get('/api/operations', $scope.formData);
+        console.log('tip');
+        $http.post('/api/operations', $scope.account)
+            .then(function(res) {
+                console.log('tip1');
+               loginInfo.operations = res.body;
+                $state.go('operations');
+            }, function(err) {
+                console.log('errrrrr');
+                console.log(err);
+            });
+        console.log('finish');
     };
 
     $scope.createAccount = function() {
@@ -72,13 +83,13 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
 
     $scope.getMoney = function() {
         $http.post('/api/getMoney', $scope.account)
-            .success(function (data) {
+            .then(function (data) {
                 console.log(data);
                 $scope.accounts = data;
                 console.log(data);
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
+                $state.go('home');
+            }, function(err){
+                console.log(err);
             });
     }
 
@@ -178,7 +189,8 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
         angular
             .module('Bank', ['bankControllers', 'ui.router', 'ngCookies'])
             .factory('loginInfo', function() {
-                var account;
+                var account,
+                    operations;
 
                 return{
                     setAccount: function(data) {
@@ -186,6 +198,12 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
                     },
                     getAccount: function() {
                         return account;
+                    },
+                    setOperations: function(data) {
+                    operations = data;
+                    },
+                    getOperations: function() {
+                        return operations;
                     }
                 }
             })
@@ -208,6 +226,11 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
                         state('login', {
                             url: '/',
                             templateUrl: 'partials/login.html',
+                            controller: 'mainController'
+                        }).
+                        state('operations', {
+                            url: '/operations',
+                            templateUrl: 'partials/operations.html',
                             controller: 'mainController'
                         });
 

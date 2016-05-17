@@ -31,8 +31,6 @@ module.exports = function(passport) {
         });
     });
 
-
-
     router.get('/api/accounts', function(req, res)
     {
         Account.find(function(err, accounts) {
@@ -44,54 +42,32 @@ module.exports = function(passport) {
         });
     });
 
-    router.post('/api/checkBalance', function(req, res)
-    {
-        Account.findOne({ 'login': req.body.login, 'password': req.body.password},
-            function(err, account) {
-                if(err)
-                {
-                    res.send(err);
-                }
-                res.json(account);
-            });
-    });
-
-    router.post('/salary', isAuthenticated, function(req,res) {
-        var token = guid.Guid();
-        var currentAccount = req.account;
-        Promise.all([Account.update({login: req.account.login}, {$inc: {amount: 500}}),
-        Transaction.create({token: token,
-        time: Date.now(),
-        source: 'salary',
-        destination: currentAccount.login,
-        amount: 500})
-        ]).then(function() {
-            console.log('tip2');
-        });
-    });
-
-
-
-
-
-    router.post('/api/signup', passport.authenticate('signup', {
-        successRedirect: '/home',
-        failureRedirect: '/home',
-        failureFlash: true
-    }));
-
-    router.get('/api/transfer', isAuthenticated, function(req, res){
+    router.get('/api/transfer', function(req, res){
         res.render('transfer', {account: req.account });
     });
 
     //get users operation for home page
-    router.get('/api/operations', isAuthenticated, function(req, res)
+    router.post('/api/operations', function(req, res)
     {
+        console.log(req.body);
         var operations = [];
         Promise.all([
-            //Transaction.find({'source': req.account.login}),
-            //Transaction.find({'destination': req.account.login})
-        ]);
+            Transaction.find({'source': req.body.login}, function(err, transactions) {
+                console.log('tip1');
+               operations = transactions.map(function(transaction) {
+                   return transaction;
+               });
+
+            }),
+            Transaction.find({'destination': req.body.login}, function(err, transactions) {
+                console.log('tip3');
+                operations = transactions.map(function(transaction) {
+                    return transaction;
+                });
+            })
+        ]).then(function(){
+            res.body = operations;
+        });
     });
 
     // removed isAuthenticated and changed 1st Account.update 'login' to req.body.source
@@ -169,13 +145,22 @@ module.exports = function(passport) {
                 'amount': 500
             })
 
-        ]).then(Account.find(function (err, accounts) {
+        ]).then(Account.findOne({'login': req.body.login}, function (err, account) {
             if (err) {
                 res.send(err);
             }
-            res.json(accounts);
+            res.json(account);
         }));
     });
+
+    //Account.findOne({ 'login': req.body.login, 'password': req.body.password},
+    //    function(err, account) {
+    //        if(err)
+    //        {
+    //            res.send(err);
+    //        }
+    //        res.json(account);
+    //    });
 
     router.get('/api/checkOperation', function(req, res)
     {
