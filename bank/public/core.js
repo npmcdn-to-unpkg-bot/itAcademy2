@@ -6,10 +6,10 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
     $scope.operations = loginInfo.getOperations();
     console.log(loginInfo.getAccount());
 
+        //allows to check number of accounts
     $http.get('/api/accounts')
         .success(function(data) {
             $scope.accounts = data;
-            console.log(data);
         })
         .error(function(data) {
             console.log('Error: ' + data);
@@ -17,17 +17,14 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
 
         //needed to show your operations
     $scope.getOperations = function() {
-        console.log('tip');
         $http.post('/api/operations', $scope.account)
             .then(function(res) {
                 loginInfo.setOperations(res.data);
                 $state.go('operations');
             },
             function(err) {
-                console.log('errrrrr');
                 console.log(err);
             });
-        console.log('finish');
     };
 
     $scope.createAccount = function() {
@@ -51,8 +48,11 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
             .success(function(data) {
                 $scope.formData = {};
                 $scope.transfers = data;
+                if(data.success)
                 $scope.account.amount = data.amount;
-                console.log(data);
+                else
+                alert(data.message);
+                console.log(data.message);
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -63,9 +63,7 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
     $scope.getMoney = function() {
         $http.post('/api/getMoney', $scope.account)
             .then(function (data) {
-                console.log(data);
                 $scope.accounts = data;
-                console.log(data);
                 $scope.account.amount += 500;
                 $state.go('home');
             }, function(err){

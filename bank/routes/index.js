@@ -7,16 +7,6 @@ var Account = require('../models/account');
 var Transaction = require('../models/transaction');
 
 
-//var isAuthenticated = function (req, res, next) {
-//    // if user is authenticated in the session, call the next() to call the next request handler
-//    // Passport adds this method to request object. A middleware is allowed to add properties to
-//    // request and response objects
-//    if (req.isAuthenticated())
-//        return next();
-//    // if the user is not authenticated then redirect him to the login page
-//    res.redirect('/');
-//}
-
 module.exports = function() {
 
     router.post('/api/login', function (req, res)
@@ -43,31 +33,23 @@ module.exports = function() {
         });
     });
 
-    //router.get('/api/transfer', function(req, res){
-    //    res.render('transfer', {account: req.account });
-    //});
-
     //get users operation for home page
     router.post('/api/operations', function(req, res)
     {
-        console.log(req.body);
         var operations = [];
         Promise.all([
             Transaction.find({'source': req.body.login}, function(err, transactions) {
-                console.log('tip1');
-               operations = transactions.map(function(transaction) {
-                   return transaction;
-               });
+                operations = transactions.map(function(transaction) {
+                    return transaction;
+                });
 
             }),
             Transaction.find({'destination': req.body.login}, function(err, transactions) {
-                console.log('tip3');
                 operations = transactions.map(function(transaction) {
                     return transaction;
                 });
             })
         ]).then(function(){
-            console.log(operations);
             res.json(operations);
         });
     });
@@ -76,12 +58,13 @@ module.exports = function() {
     router.post('/api/transfer', function(req, res){
         //generate token for transaction
         var token = guid.Guid();
+        //variable for checking transaction info
         var correct = true;
+        //variable for future response, which allows to know amount at home page
         var accAmount = 0;
         Promise.all([
             //check if source exists
             Account.findOne({ 'login': req.body.source}, function(err, account) {
-                console.log(account);
                 accAmount = account.amount;
                 if(account == null) {
                     correct = false;
@@ -100,7 +83,6 @@ module.exports = function() {
             }),
             //check if destinations exists
             Account.findOne({ 'login': req.body.destination}, function(err, account) {
-                console.log(account);
                 if(account == null) {
                     correct = false;
                     res.json({
@@ -143,7 +125,7 @@ module.exports = function() {
                 accAmount = accAmount - req.body.amount;
                 res.json({
                 success: true,
-                message: "good",
+                message: "transfer completed!",
                 token: token,
                 amount: accAmount
             });
@@ -157,6 +139,8 @@ module.exports = function() {
         })
     });
 
+
+        //public transfer api for store
     router.post('/transfer', function(req, res){
         //generate token for transaction
         var source_id = mongoose.Types.ObjectId(req.body.source);
@@ -166,7 +150,6 @@ module.exports = function() {
         Promise.all([
             //check if source exists
             Account.findOne({ '_id': source_id}, function(err, account) {
-                console.log(account);
                 if(account == null) {
                     correct = false;
                     res.json({
@@ -191,7 +174,6 @@ module.exports = function() {
             }),
             //check if destinations exists
             Account.findOne({ '_id': destination_id}, function(err, account) {
-                console.log(account);
                 if(account == null) {
                     correct = false;
                     res.json({
@@ -243,6 +225,7 @@ module.exports = function() {
             })
     });
 
+        //allows user to get cash
     router.post('/api/getMoney', function(req, res) {
         var token = guid.Guid();
 
@@ -266,15 +249,7 @@ module.exports = function() {
         }));
     });
 
-    //Account.findOne({ 'login': req.body.login, 'password': req.body.password},
-    //    function(err, account) {
-    //        if(err)
-    //        {
-    //            res.send(err);
-    //        }
-    //        res.json(account);
-    //    });
-
+        //public api for store
     router.get('/checkOperation', function(req, res)
     {
         Transaction.findOne({
@@ -294,7 +269,7 @@ module.exports = function() {
             res.json({success: true});
         })
     })
-
+        //register account
     router.post('/api/accounts', function(req, res)
     {
         Account.create({
@@ -316,6 +291,7 @@ module.exports = function() {
         });
     });
 
+        //api for removing objects
     router.delete('/api/accounts/:account_id', function(req, res)
     {
         Account.remove({
@@ -330,20 +306,10 @@ module.exports = function() {
                 {
                     res.send(err);
                 }
-                res.json(accounts);
+                res.json(accounts.length);
             });
         });
     })
-
-    //router.get('/home', isAuthenticated, function(req, res){
-    //    res.render('home', {user: req.account });
-    //    });
-    ////
-    ////router.get('/signout', function(req, res) {
-    ////    req.logout();
-    ////    res.redirect('/');
-    ////});
-
 
 
     router.all('*', function(req, res, next) {
