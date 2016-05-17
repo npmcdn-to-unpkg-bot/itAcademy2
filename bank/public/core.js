@@ -28,12 +28,11 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
     };
 
     $scope.createAccount = function() {
-        console.log('tip');
         $http.post('/api/accounts', $scope.formData)
             .success(function(data) {
                 $scope.formData = {};
                 $scope.accounts = data;
-                console.log(data);
+                $state.go('login');
             })
             .error(function(data) {
                 console.log('Error: ' + data);
@@ -74,9 +73,12 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
     $scope.loginUser = function (formData) {
            $http.post('api/login', formData)
                 .then(function(res){
-                    loginInfo.setAccount(res.data);
-                    $state.go('home');
-
+                    if(res.data.message)
+                        alert(res.data.message);
+                    else {
+                        loginInfo.setAccount(res.data);
+                        $state.go('home');
+                    }
                 }, function(err){
                     console.log(err);
                 });
@@ -84,84 +86,6 @@ bankControllers.controller('mainController', ['$scope', '$http', '$state', 'logi
 
 }]
 );
-
-//function mainController($scope, $http) {
-//    $scope.formData = {};
-//
-//    $http.get('/api/accounts')
-//        .success(function(data) {
-//            $scope.accounts = data;
-//            console.log(data);
-//        })
-//        .error(function(data) {
-//            console.log('Error: ' + data);
-//        });
-//
-//    $scope.checkBalance = function()
-//    {
-//        $http.get('/api/checkBalance', $scope.formData)
-//            .success(function(data)
-//            {
-//                $scope.balance = data;
-//            })
-//            .error(function(data) {
-//                console.log('Error: ' + data);
-//            })
-//    };
-//
-//    $scope.getOperations = function()
-//    {
-//        $http.get('/api/operations', $scope.formData);
-//    };
-//
-//    $scope.createAccount = function() {
-//        $http.post('/api/accounts', $scope.formData)
-//            .success(function(data) {
-//                $scope.formData = {};
-//                $scope.accounts = data;
-//                console.log(data);
-//            })
-//            .error(function(data) {
-//                console.log('Error: ' + data);
-//            });
-//    };
-//
-//    $scope.deleteAccount = function(id) {
-//        $http.delete('/api/accounts/' + id)
-//            .success(function(data) {
-//                $scope.accounts = data;
-//                console.log(data);
-//            })
-//            .error(function(data) {
-//                console.log('Error: ' + data);
-//            });
-//    };
-//
-//    $scope.transfer = function() {
-//        $http.post('/api/transfer', $scope.formData)
-//            .success(function(data) {
-//                $scope.formData = {};
-//                $scope.transfers = data;
-//                console.log(data);
-//            })
-//            .error(function(data) {
-//                console.log('Error: ' + data);
-//            });
-//    };
-//
-//    $scope.getMoney = function() {
-//        $http.post('/api/getMoney', $scope.formData)
-//            .success(function (data) {
-//                $scope.formData = {};
-//                $scope.accounts = data;
-//                console.log(data);
-//            })
-//            .error(function(data) {
-//                console.log('Error: ' + data);
-//            });
-//    };
-
-
 
     (function() {
         angular

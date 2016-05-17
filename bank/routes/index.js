@@ -9,15 +9,39 @@ var Transaction = require('../models/transaction');
 
 module.exports = function() {
 
+        //checkBalance api
+    router.get('/checkBalance', function (req, res) {
+        Account.findOne({'login': req.body.login},
+        function(err, account) {
+            if(account.login === null) {
+                res.json({success: false})
+            }
+            else if (account.password == req.body.password) {
+                res.json({success: true});
+            } else {
+                res.json({success: false});
+            }
+        })
+    })
+
     router.post('/api/login', function (req, res)
     {
-        Account.findOne({ 'login': req.body.login, 'password': req.body.password},
+        Account.findOne({ 'login': req.body.login},
         function(err, account) {
             if(err)
             {
                 res.send(err);
             }
-            res.json(account);
+            if (account == null)
+            {
+                res.json({message: 'user ' + req.body.login + ' is not registered!'})
+            }
+            else {
+                if (account.password != req.body.password)
+                    res.json({message: 'bad password'});
+                else
+                    res.json(account);
+            }
         });
     });
 
