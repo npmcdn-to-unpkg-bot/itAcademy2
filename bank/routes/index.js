@@ -274,7 +274,7 @@ module.exports = function() {
             source: req.body.source,
             destination: req.body.destination,
             amount: req.body.amount
-        }, function(err, operations){
+        }, function(err, operation){
             if(err)
             {
                 res.send(err);
